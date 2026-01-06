@@ -1,0 +1,4 @@
+module-info.class
+com\mycompany\ecotrack\PrimaryController.class
+com\mycompany\ecotrack\SecondaryController.class
+com\mycompany\ecotrack\App.class
