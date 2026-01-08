@@ -15,8 +15,8 @@ import modelos.Zona;
  * @author User
  */
 public class SistemaEcoTrack {
-    //private DoublyCircularNodeList<Residuo> listaResiduos;
-    //private PriorityQueue<VehiculoRecolector> colaVehiculos;
+    private DoublyCircularNodeList<Residuo> listaResiduos;
+    private PriorityQueue<VehiculoRecolector> colaVehiculos;
     private Map<String,Zona> mapaZonas;
     private CentroReciclaje cReciclaje;
     
