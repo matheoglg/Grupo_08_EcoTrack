@@ -38,10 +38,33 @@ public class CentroReciclaje {
             return;
         }
         Residuo r = pilaResiduos.pop();
-        actualizarEstadisticas();
+        actualizarEstadisticas(r);
     }
     
-    public void actualizarEstadisticas(){
-        // Actualiza los mapas de estadísticas por tipo de basura y por zona.
+    // Actualiza los mapas de estadísticas por tipo de basura y por zona.
+    public void actualizarEstadisticas(Residuo r){
+        if (r == null){
+            return;
+        }
+        
+        String tipo = r.getTipo();
+        double peso = r.getPeso();
+        String zona = r.getZona().getNombre();
+        
+        // Actualiza mapa de estadísticas por tipo
+        if (estadisticasPorTipo.containsKey(tipo)){
+            double pesoAcumulado = estadisticasPorTipo.get(tipo);
+            estadisticasPorTipo.put(tipo, pesoAcumulado + peso);
+        }else{
+            estadisticasPorTipo.put(tipo, peso);
+        }
+        
+        // Actualiza mapa de estadísticas por zona
+        if(estadisticasPorZona.containsKey(zona)){
+            double pesoAcumulado = estadisticasPorZona.get(zona);
+            estadisticasPorZona.put(zona,pesoAcumulado + peso);
+        }else{
+            estadisticasPorZona.put(zona, peso);
+        }
     }
 }
