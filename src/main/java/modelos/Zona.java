@@ -43,8 +43,7 @@ public class Zona {
         this.pPendiente = pPendiente;
     }
     
-    public void calcularUtilidad(){
-        // Calcula la utilidad de la zona con los valores de pRecolectado y pPendiente 
-        // para verificar si esta tiene acumulación de basura o si está limpia.
+    public double calcularUtilidad(){
+        return pRecolectado - pPendiente;
     }
 }
