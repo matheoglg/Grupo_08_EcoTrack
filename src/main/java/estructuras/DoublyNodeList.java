@@ -9,22 +9,22 @@ package estructuras;
  * @author Hogar
  */
 public class DoublyNodeList<E> {
-    private E contenido;
+    private E content;
     private DoublyNodeList<E> next;
     private DoublyNodeList<E> previous;
 
     public DoublyNodeList(E contenido) {
-        this.contenido = contenido;
+        this.content = contenido;
         this.next = null;
         this.previous = null;
     }
 
     public E getContenido() {
-        return contenido;
+        return content;
     }
 
     public void setContenido(E contenido) {
-        this.contenido = contenido;
+        this.content = contenido;
     }
 
     public DoublyNodeList<E> getNext() {
