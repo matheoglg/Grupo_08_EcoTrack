@@ -4,6 +4,7 @@
  */
 package modelos;
 
+import estructuras.Stack;
 import java.util.Map;
 
 /**
@@ -15,19 +16,29 @@ public class CentroReciclaje {
     private Map<String,Double> estadisticasPorTipo;
     private Map<String,Double> estadisticasPorZona;
 
-    public CentroReciclaje(Stack pilaResiduos, Map estadisticasPorZona) {
+    public CentroReciclaje(Stack<Residuo> pilaResiduos, Map<String, Double> estadisticasPorTipo, Map<String, Double> estadisticasPorZona) {
         this.pilaResiduos = pilaResiduos;
+        this.estadisticasPorTipo = estadisticasPorTipo;
         this.estadisticasPorZona = estadisticasPorZona;
     }
     
+    // Agrega el residuo dado al tope de la pila de nombre pilaResiduos
+    // simulando el ingreso de residuos al centro.
     public void apilarResiduo(Residuo r){
-        // Agrega el residuo dado al tope de la pila de nombre pilaResiduos
-        // simulando el ingreso de residuos al centro.
+        if (r == null){                        
+            return;                            
+        }
+        pilaResiduos.push(r);
     }
     
+    // Saca el residuo que está en el tope de la pila
+    // para simular su procesamiento y así llama a actualizarEstadisticas().
     public void procesarResiduo(){
-        // Saca el residuo que está en el tope de la pila
-        // para simular su procesamiento y así llama a actualizarEstadisticas().
+        if(pilaResiduos.isEmpty()){
+            return;
+        }
+        Residuo r = pilaResiduos.pop();
+        actualizarEstadisticas();
     }
     
     public void actualizarEstadisticas(){
