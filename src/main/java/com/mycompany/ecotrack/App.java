@@ -7,6 +7,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import sistema.SistemaEcoTrack;
 
 /**
  * JavaFX App
@@ -18,8 +19,15 @@ public class App extends Application {
     @Override
     //Hola
     public void start(Stage stage) throws IOException {
-        scene = new Scene(loadFXML("VentanaInicio"), 640, 480);
+        Parent root = FXMLLoader.load(getClass().getResource("VentanaInicio.fxml"));
+        Scene scene = new Scene(root);
+
+        stage.setTitle("EcoTrack");
         stage.setScene(scene);
+
+        stage.setMinWidth(900);
+        stage.setMinHeight(600);
+
         stage.show();
     }
 
@@ -33,6 +41,7 @@ public class App extends Application {
     }
 
     public static void main(String[] args) {
+        SistemaEcoTrack.getInstancia();
         launch();
     }
 

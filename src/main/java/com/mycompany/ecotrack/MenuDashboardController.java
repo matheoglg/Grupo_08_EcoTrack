@@ -41,7 +41,18 @@ public class MenuDashboardController {
 
     @FXML
     private void handleLogout(ActionEvent event) {
-        cambiarEscena("login.fxml", "EcoTrack - Iniciar Sesión");
+        // 1. Opcional: Confirmación antes de salir
+        Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmacion.setTitle("Cerrar Sesión");
+        confirmacion.setHeaderText(null);
+        confirmacion.setContentText("¿Está seguro de que desea salir del sistema EcoTrack?");
+
+        confirmacion.showAndWait().ifPresent(response -> {
+            if (response == javafx.scene.control.ButtonType.OK) {
+                
+                cambiarEscena("VentanaInicio.fxml", "EcoTrack");
+            }
+        });
     }
 
     
@@ -51,13 +62,18 @@ public class MenuDashboardController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxml));
             Parent root = loader.load();
-            
-            // Obtenemos el Stage actual desde cualquier botón
+
             Stage stage = (Stage) btnResiduos.getScene().getWindow();
-            
-            Scene scene = new Scene(root);
+
+            boolean wasMaximized = stage.isMaximized();
+            double currentWidth = stage.getWidth();
+            double currentHeight = stage.getHeight();
+
+            Scene scene = new Scene(root, currentWidth, currentHeight); // Forzamos el tamaño actual
             stage.setScene(scene);
             stage.setTitle(titulo);
+
+            stage.setMaximized(wasMaximized);
             stage.show();
             
         } catch (IOException e) {

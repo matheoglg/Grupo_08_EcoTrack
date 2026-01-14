@@ -10,10 +10,10 @@ package modelos;
  */
 public class Zona {
     private String nombre;
-    private double pRecolectado;
-    private double pPendiente;
+    private int pRecolectado;
+    private int pPendiente;
 
-    public Zona(String nombre, double pRecolectado, double pPendiente) {
+    public Zona(String nombre, int pRecolectado, int pPendiente) {
         this.nombre = nombre;
         this.pRecolectado = pRecolectado;
         this.pPendiente = pPendiente;
@@ -31,7 +31,7 @@ public class Zona {
         return pRecolectado;
     }
 
-    public void setpRecolectado(double pRecolectado) {
+    public void setpRecolectado(int pRecolectado) {
         this.pRecolectado = pRecolectado;
     }
 
@@ -39,7 +39,7 @@ public class Zona {
         return pPendiente;
     }
 
-    public void setpPendiente(double pPendiente) {
+    public void setpPendiente(int pPendiente) {
         this.pPendiente = pPendiente;
     }
     

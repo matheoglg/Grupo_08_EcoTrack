@@ -67,4 +67,14 @@ public class CentroReciclaje {
             estadisticasPorZona.put(zona, peso);
         }
     }
+    
+    public Stack<Residuo> getPilaResiduos(){
+        return pilaResiduos;
+    }
+    public Map<String,Double> getEstadisticasPorTipo(){
+        return estadisticasPorTipo;
+    }
+    public Map<String,Double> getEstadisticasPorZona(){
+        return estadisticasPorZona;
+    }
 }

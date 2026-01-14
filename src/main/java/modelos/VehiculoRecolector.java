@@ -29,4 +29,25 @@ public class VehiculoRecolector {
         // para recolectar basura.
         return 0;
     }
+
+    public String getId() {
+        return id;
+    }
+
+    public double getCapMax() {
+        return capMax;
+    }
+
+    public double getCargaActual() {
+        return cargaActual;
+    }
+    public void setCargaActual(double cargaActual){
+        this.cargaActual = cargaActual;
+                
+    }
+
+    public Zona getZonaRecoleccion() {
+        return zonaRecoleccion;
+    }
+    
 }

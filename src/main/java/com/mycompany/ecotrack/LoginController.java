@@ -37,9 +37,6 @@ public class LoginController {
 
         // Validación simple para testear si funciona
         if (user.equals("admin") && password.equals("1234")) {
-            mostrarAlerta(Alert.AlertType.INFORMATION, "Login Exitoso", 
-                          "Bienvenido a EcoTrack");
-            
             irAlDashboard();
             
         } else {
@@ -50,13 +47,12 @@ public class LoginController {
     
     private void irAlDashboard() {
         try {
-            
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("dashboard.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("MenuDashboard.fxml"));
             Parent root = loader.load();
             Scene scene = new Scene(root);
             Stage stage = (Stage) botonLogin.getScene().getWindow();
             stage.setScene(scene);
-            stage.setTitle("EcoTrack - Panel Principal");
+            stage.setTitle("EcoTrack");
             stage.show();
 
         } catch (IOException e) {
