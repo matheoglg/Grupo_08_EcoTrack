@@ -8,7 +8,7 @@ import estructuras.DoublyCircularLinkedList;
 import estructuras.Stack;
 import java.io.*;
 import java.time.LocalDate;
-import java.util.PriorityQueue;
+import estructuras.PriorityQueue;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -71,9 +71,8 @@ public class SistemaEcoTrack {
     }
     
     public void registrarResiduo(Residuo r){
-        if (r != null) {
+        if (r != null&& r.getZona() != null) {
             listaResiduos.addLast(r);
-            
             int actualPendiente = r.getZona().getpPendiente();
             r.getZona().setpPendiente(actualPendiente + 1);
         }
@@ -81,7 +80,7 @@ public class SistemaEcoTrack {
     
     public void agregarVehiculo(VehiculoRecolector v) {
         if (v != null) {
-            colaVehiculos.offer(v);
+            colaVehiculos.enqueue(v);
         }
     }
     
@@ -105,7 +104,7 @@ public class SistemaEcoTrack {
         // Obtener el vehículo con mayor prioridad (el primero de la cola)
         // .poll() extrae y elimina el elemento de la cabeza de la cola
         if (zonaCritica != null) {
-            VehiculoRecolector vehiculo = colaVehiculos.poll(); 
+            VehiculoRecolector vehiculo = colaVehiculos.dequeue(); 
 
             // 4. Asignar el vehículo a la zona crítica
             vehiculo.asignarZona(zonaCritica);
@@ -120,9 +119,12 @@ public class SistemaEcoTrack {
     }
     
     public void cargarDatos(){
-        cargarResiduos();
+        //primero las zonas
+        cargarZonas(); 
+        //estadisticas
         cargarEstadisticas();
-        cargarZonas();
+        //los que dependen de las zonas
+        cargarResiduos();
         cargarVehiculos();
         if (listaResiduos.isEmpty()) {
             inicializarDatos();
@@ -134,11 +136,15 @@ public class SistemaEcoTrack {
         guardarEstadisticas();
         guardarVehiculos();
         guardarZonas();
+        cargarVehiculos();
     }
     
     private void guardarResiduos() {
-        try (PrintWriter out = new PrintWriter(new FileWriter(ARCHIVO_RESIDUOS))) {
+        File f = new File(ARCHIVO_RESIDUOS);
+        try (PrintWriter out = new PrintWriter(new FileWriter(f))) {
+            if (listaResiduos.isEmpty()) return;
             for (Residuo r : listaResiduos) {
+                if (r == null) continue;
                 // Formato: id;nombre;tipo;peso;fecha;nombreZona;prioridad
                 out.println(r.getId() + ";" + r.getNombre() + ";" + r.getTipo() + ";" + 
                             r.getPeso() + ";" + r.getFechaRecoleccion() + ";" + 
@@ -146,30 +152,41 @@ public class SistemaEcoTrack {
             }
         } catch (IOException e) { System.err.println("Error residuos: " + e.getMessage()); }
     }
+    
+    
     private void guardarEstadisticas() {
         try (PrintWriter out = new PrintWriter(new FileWriter(ARCHIVO_ESTADISTICAS))) {
             // Guardamos el mapa de tipos
-            for (Map.Entry<String, Double> entry : cReciclaje.getEstadisticasPorTipo().entrySet()) {
+            if (cReciclaje.getEstadisticasPorTipo() != null) {
+                for (Map.Entry<String, Double> entry : cReciclaje.getEstadisticasPorTipo().entrySet()) {
                 out.println("T:" + entry.getKey() + ":" + entry.getValue());
+                }
             }
             // Guardamos el mapa de zonas
-            for (Map.Entry<String, Double> entry : cReciclaje.getEstadisticasPorZona().entrySet()) {
+            if (cReciclaje.getEstadisticasPorZona() != null) {
+                for (Map.Entry<String, Double> entry : cReciclaje.getEstadisticasPorZona().entrySet()) {
                 out.println("Z:" + entry.getKey() + ":" + entry.getValue());
+                }
             }
         } catch (IOException e) {
             System.err.println("Error guardando estadísticas: " + e.getMessage());
         }
     }
+    
+    
     private void guardarVehiculos() {
         try (PrintWriter out = new PrintWriter(new FileWriter(ARCHIVO_VEHICULOS))) {
             while(!colaVehiculos.isEmpty()){
-                VehiculoRecolector v = colaVehiculos.poll();
-                out.println(v.getId() + ";" + v.getCapMax());
-            }
+                VehiculoRecolector v = colaVehiculos.dequeue();
+                String nombreZona = (v.getZonaRecoleccion() != null) ? v.getZonaRecoleccion().getNombre() : "Sin Zona";
+                out.println(v.getId() + ";" +  v.getCapMax() + ";" +v.getCargaActual() + ";" + nombreZona);
+            }  
         } catch (IOException e) {
             System.err.println("Error guardando vehículos: " + e.getMessage());
         }
     }
+    
+    
     private void guardarZonas() {
         try (PrintWriter out = new PrintWriter(new FileWriter(ARCHIVO_ZONAS))) {
             for (Zona z : mapaZonas.values()) {
@@ -185,7 +202,9 @@ public class SistemaEcoTrack {
         if (!f.exists()) return;
         try (Scanner sc = new Scanner(f)) {
             while (sc.hasNextLine()) {
-                String[] d = sc.nextLine().split(",");
+                String linea = sc.nextLine();
+                if (linea.trim().isEmpty()) continue;
+                String[] d = linea.split(",");
                 if (d.length == 3) {
                     Zona z = new Zona(d[0], Integer.parseInt(d[1]), Integer.parseInt(d[2]));
                     mapaZonas.put(z.getNombre(), z);
@@ -193,49 +212,76 @@ public class SistemaEcoTrack {
             }
         } catch (Exception e) { System.err.println("Error cargando zonas."); }
     }
+    
+    
     private void cargarResiduos() {
         File f = new File(ARCHIVO_RESIDUOS);
         if (!f.exists()) return;
         try (Scanner sc = new Scanner(f)) {
             while (sc.hasNextLine()) {
-                String[] d = sc.nextLine().split(";");
+                String linea = sc.nextLine();
+            if (linea.trim().isEmpty()) continue;
+            String[] d = linea.split(";");
+          
+            if (d.length >= 7) { //validar que tenga las columnas necesarias
                 Zona z = mapaZonas.get(d[5]);
                 if (z != null) {
-                    Residuo r = new Residuo(d[0], d[1], d[2], Double.parseDouble(d[3]), 
-                                            LocalDate.parse(d[4]), z, Integer.parseInt(d[6]));
-                    listaResiduos.addLast(r);
+                    Residuo r = new Residuo(d[0],d[1],d[2],Double.parseDouble(d[3]),LocalDate.parse(d[4]), z,Integer.parseInt(d[6]));
+                    listaResiduos.addLast(r); //se agrega a circular doble
+      
                 }
             }
+        }
         } catch (Exception e) { System.err.println("Error cargando residuos"); }
     }
+    
+    
     private void cargarEstadisticas() {
         File f = new File(ARCHIVO_ESTADISTICAS);
         if (!f.exists()) return;
         try (Scanner sc = new Scanner(f)) {
             while (sc.hasNextLine()) {
-                String[] d = sc.nextLine().split(":");
-                if (d[0].equals("T")) 
+                String linea = sc.nextLine();
+                if (linea.trim().isEmpty()) continue;
+                String[] d = linea.split(":");                
+                if (d.length >= 3) {
+                if (d[0].equals("T")) {
+                    //carga estadísticas por tipo de residuo
                     cReciclaje.getEstadisticasPorTipo().put(d[1], Double.parseDouble(d[2]));
-                else 
+                } else if (d[0].equals("Z")) {
+                    //carga estadísticas por zona 
                     cReciclaje.getEstadisticasPorZona().put(d[1], Double.parseDouble(d[2]));
+                    }
+                }
             }
         } catch (Exception e) { 
             System.err.println("Error al cargar estadísticas."); 
         }
     }
+    
+    
     private void cargarVehiculos() {
         File f = new File(ARCHIVO_VEHICULOS);
         if (!f.exists()) return;
         try (Scanner sc = new Scanner(f)) {
             while (sc.hasNextLine()) {
-                String[] d = sc.nextLine().split(";");
+                String linea = sc.nextLine();
+                if (linea.trim().isEmpty()) continue;
+                String[] d = linea.split(";");    
+                if (d.length >= 4) {
                 VehiculoRecolector v = new VehiculoRecolector(d[0], Double.parseDouble(d[1]),Double.parseDouble(d[2]), mapaZonas.get(d[3]));
                 v.setCargaActual(Double.parseDouble(d[2]));
-                v.asignarZona(mapaZonas.get(d[3]));
-                colaVehiculos.offer(v);
-            }
+                Zona zonaAsignada=mapaZonas.get(d[3]);
+                if (zonaAsignada != null) {
+                    v.asignarZona(zonaAsignada);
+                }
+                colaVehiculos.enqueue(v);
+                }
+            }   
         } catch (Exception e) { System.err.println("Error cargando vehiculos"); }
     }
+    
+    
     
     public void inicializarDatos(){
         Zona norte = new Zona("Sector Norte", 0, 0);
@@ -256,8 +302,8 @@ public class SistemaEcoTrack {
         v2.asignarZona(sur);
 
         // Agregarlos a la PriorityQueue (se ordenarán por la prioridad de sus zonas)
-        colaVehiculos.offer(v1);
-        colaVehiculos.offer(v2);
+        colaVehiculos.enqueue(v1);
+        colaVehiculos.enqueue(v2);
 
         // Crear Residuos Iniciales (7 atributos)
         registrarResiduo(new Residuo("R-001", "Envases Plásticos", "Plástico", 12.5, 

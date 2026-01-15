@@ -8,6 +8,7 @@ com\mycompany\ecotrack\App.class
 modelos\Zona.class
 estructuras\DoublyNodeList.class
 estructuras\DoublyCircularLinkedList.class
+estructuras\PriorityQueue.class
 estructuras\List.class
 estructuras\NodeList.class
 module-info.class

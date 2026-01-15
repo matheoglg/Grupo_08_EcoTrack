@@ -36,13 +36,16 @@ public class LinkedList<E> implements List<E>{
     public boolean addFirst(E e) { //dado un elemento generico
         //size++;
         if(e!=null) {
-            NodeList<E> newNode=new NodeList<>(e); // constructor crea un nodo aislado
-            newNode.setNext(header); //El siguiente de ese nuevo nodo es Header
-            this.setHeader(newNode); //actualizar el header de la lista
-            return true;
-        } else {
-            return false;
+            NodeList<E> newNode = new NodeList<>(e);
+            newNode.setNext(header);
+            header = newNode;
+        
+        if (last == null) { //lista vacia,newNode es el ultimo
+            last = newNode;
         }
+        return true;
+    }
+    return false;
     }
 
     @Override
