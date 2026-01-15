@@ -27,6 +27,7 @@ public class SistemaEcoTrack {
     private PriorityQueue<VehiculoRecolector> colaVehiculos;
     private CentroReciclaje cReciclaje;
     private Map<String, Zona> mapaZonas;
+    private boolean cambiosP = false;
     
     private final String ARCHIVO_RESIDUOS = "residuos.txt";
     private final String ARCHIVO_ESTADISTICAS = "estadisticas.txt";
@@ -75,7 +76,16 @@ public class SistemaEcoTrack {
             listaResiduos.addLast(r);
             int actualPendiente = r.getZona().getpPendiente();
             r.getZona().setpPendiente(actualPendiente + 1);
+            cambiosP=true;
         }
+    }
+    
+    public boolean hayCambios() {
+        return cambiosP;
+    }
+
+    public void resetearCambios() {
+        this.cambiosP = false;
     }
     
     public void agregarVehiculo(VehiculoRecolector v) {
