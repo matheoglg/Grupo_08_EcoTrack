@@ -141,6 +141,10 @@ public class GestionResiduosController {
     }
     @FXML
     private void handleGuardar(ActionEvent event) {
+        if (!sistema.hayCambios()) {
+            mostrarAlerta("Sin cambios", "No se detectaron nuevos residuos para guardar.");
+            return;
+        }        
         sistema.guardarDatos();
         mostrarAlerta("Guardado", "Los datos se han guardado correctamente");
         
@@ -157,6 +161,18 @@ public class GestionResiduosController {
         } catch (IOException e) {
             mostrarAlerta("Error", "No se pudo cargar la pantalla principal: " + e.getMessage());
             e.printStackTrace();
+        }
+    }
+    
+    private void irAlMenu(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("MenuDashboard.fxml"));
+            Parent root = loader.load();
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (IOException e) {
+            mostrarAlerta("Error", "No se pudo volver al menú principal.");
         }
     }
 
