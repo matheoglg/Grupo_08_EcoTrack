@@ -5,12 +5,13 @@
 package modelos;
 
 import java.time.LocalDate;
+import java.util.Comparator;
 
 /**
  *
  * @author User
  */
-public class Residuo {
+public class Residuo implements Comparable<Residuo> {
     private String id;
     private String nombre;
     private String tipo;
@@ -84,6 +85,25 @@ public class Residuo {
     public void setPrioridadAmbiental(int prioridadAmbiental) {
         this.prioridadAmbiental = prioridadAmbiental;
     }
-    
+
+    // Ordenar por prioridad ambiental de mayor a menor
+    @Override
+    public int compareTo(Residuo otroResiduo) {
+        return Integer.compare(this.getPrioridadAmbiental(), otroResiduo.getPrioridadAmbiental());
+    }
+    // Ordenar por peso
+    public static Comparator<Residuo> PorPeso = (r1, r2) -> {
+        return Double.compare(r1.getPeso(), r2.getPeso());
+    };
+
+    // Ordenar por Tipo (Alfabético A-Z)
+    public static Comparator<Residuo> PorTipo = (r1, r2) -> {
+        return r1.getTipo().compareToIgnoreCase(r2.getTipo());
+    };
+
+    // Ordenar por Prioridad Ambiental (Mayor a Menor)
+    public static Comparator<Residuo> PorPrioridad = (r1, r2) -> {
+        return Integer.compare(r2.getPrioridadAmbiental(), r1.getPrioridadAmbiental());
+    };
     
 }

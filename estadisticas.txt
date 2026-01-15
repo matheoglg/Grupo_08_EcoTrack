@@ -1,0 +1,3 @@
+T:Plástico:150.0
+T:Papel:80.0
+Z:Sector Norte:230.0

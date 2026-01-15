@@ -27,7 +27,7 @@ public class Zona {
         this.nombre = nombre;
     }
 
-    public double getpRecolectado() {
+    public int getpRecolectado() {
         return pRecolectado;
     }
 
@@ -35,7 +35,7 @@ public class Zona {
         this.pRecolectado = pRecolectado;
     }
 
-    public double getpPendiente() {
+    public int getpPendiente() {
         return pPendiente;
     }
 
@@ -43,7 +43,7 @@ public class Zona {
         this.pPendiente = pPendiente;
     }
     
-    public double calcularUtilidad(){
+    public int calcularUtilidad(){
         return pRecolectado - pPendiente;
     }
 }

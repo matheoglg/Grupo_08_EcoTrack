@@ -26,7 +26,7 @@ public class MenuDashboardController {
     
     @FXML
     private void goToResiduos(ActionEvent event) {
-        cambiarEscena("residuos_gestion.fxml", "EcoTrack - Gestión de Residuos");
+        cambiarEscena("GestionResiduos.fxml", "EcoTrack - Gestión de Residuos");
     }
 
     @FXML

@@ -1,0 +1,3 @@
+Sector Sur,0,1
+Sector Norte,0,2
+Casco Central,0,0

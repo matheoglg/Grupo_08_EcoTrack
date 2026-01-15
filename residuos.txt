@@ -1,0 +1,3 @@
+R-001;Envases Plásticos;Plástico;12.5;2026-01-14;Sector Norte;2
+R-002;Papel Periódico;Papel;5.0;2026-01-13;Sector Norte;1
+R-003;Restos de Comida;Orgánico;25.0;2026-01-14;Sector Sur;3

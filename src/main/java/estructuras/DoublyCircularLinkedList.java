@@ -186,6 +186,53 @@ public class DoublyCircularLinkedList<E> implements List<E>{
 
     @Override
     public Iterator<E> iterator() {
-        throw new UnsupportedOperationException("no implementado aún");
+        return new ListIterator();
+    }
+    
+    public class ListIterator implements Iterator<E> {
+        private DoublyNodeList<E> current = head;
+        private int count = 0; 
+
+        @Override
+        public boolean hasNext() {
+            return count < size();
+        }
+
+        @Override
+        public E next() {
+            if (isEmpty()) throw new NoSuchElementException();
+            E content = current.getContent();
+            current = current.getNext();
+            count++;
+            return content;
+        }
+
+        /**
+         * Mueve el puntero al siguiente y retorna el contenido.
+         * En una lista circular, esto permite navegación infinita.
+         */
+        public E forward() {
+            if (isEmpty()) return null;
+            current = current.getNext();
+            return current.getContent();
+        }
+
+        /**
+         * Mueve el puntero al anterior y retorna el contenido.
+         * Cumple con el requisito de iterar hacia atrás.
+         */
+        public E backward() {
+            if (isEmpty()) return null;
+            current = current.getPrevious();
+            return current.getContent();
+        }
+
+        public E getCurrentContent() {
+            if(current != null){
+                return current.getContent();
+            } else{
+                return null;
+            }
+        }
     }
 }

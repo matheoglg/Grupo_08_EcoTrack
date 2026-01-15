@@ -1,5 +1,6 @@
 com\mycompany\ecotrack\MenuDashboardController.class
 estructuras\LinkedList.class
+estructuras\DoublyCircularLinkedList$ListIterator.class
 estructuras\Stack.class
 com\mycompany\ecotrack\LoginController.class
 modelos\Residuo.class
@@ -10,6 +11,7 @@ estructuras\DoublyCircularLinkedList.class
 estructuras\List.class
 estructuras\NodeList.class
 module-info.class
+com\mycompany\ecotrack\GestionResiduosController.class
 modelos\CentroReciclaje.class
 estructuras\LinkedList$1.class
 sistema\SistemaEcoTrack.class

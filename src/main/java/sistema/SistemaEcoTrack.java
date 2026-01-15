@@ -43,6 +43,7 @@ public class SistemaEcoTrack {
             new HashMap<String, Double>(), 
             new HashMap<String, Double>()
         );
+        mapaZonas = new HashMap<>();
         cargarDatos();
     }
     
@@ -72,25 +73,57 @@ public class SistemaEcoTrack {
     public void registrarResiduo(Residuo r){
         if (r != null) {
             listaResiduos.addLast(r);
+            
+            int actualPendiente = r.getZona().getpPendiente();
+            r.getZona().setpPendiente(actualPendiente + 1);
         }
     }
     
     public void agregarVehiculo(VehiculoRecolector v) {
         if (v != null) {
-            colaVehiculos.add(v);
+            colaVehiculos.offer(v);
         }
     }
     
     public void despacharVehiculo(){
-        // Obtiene el vehículo con mayor prioridad de la cola de prioridad de vehículos 
-        // y lo asigna a la zona más crítica, es decir, la que tenga menor utilidad.        
+        if (colaVehiculos.isEmpty()) {
+            return;
+        }
+
+        // Buscar la zona más crítica (la de menor utilidad ambiental)
+        Zona zonaCritica = null;
+        double menorUtilidad = Double.MAX_VALUE;
+
+        for (Zona z : mapaZonas.values()) {
+            int utilidadActual = z.calcularUtilidad();
+            if (utilidadActual < menorUtilidad) {
+                menorUtilidad = utilidadActual;
+                zonaCritica = z;
+            }
+        }
+
+        // Obtener el vehículo con mayor prioridad (el primero de la cola)
+        // .poll() extrae y elimina el elemento de la cabeza de la cola
+        if (zonaCritica != null) {
+            VehiculoRecolector vehiculo = colaVehiculos.poll(); 
+
+            // 4. Asignar el vehículo a la zona crítica
+            vehiculo.asignarZona(zonaCritica);
+
+            System.out.println("DESPACHO: El vehículo " + vehiculo.getId() + 
+                               " ha sido enviado a la zona: " + zonaCritica.getNombre() + 
+                               " (Utilidad: " + menorUtilidad + ")");
+
+            // Nota: Una vez que el vehículo termine su ruta, 
+            // deberías volver a meterlo a la cola con colaVehiculos.add(vehiculo)
+        }        
     }
     
     public void cargarDatos(){
         cargarResiduos();
         cargarEstadisticas();
         cargarZonas();
-        cargarVehiculos;
+        cargarVehiculos();
         if (listaResiduos.isEmpty()) {
             inicializarDatos();
         }
@@ -129,8 +162,6 @@ public class SistemaEcoTrack {
     }
     private void guardarVehiculos() {
         try (PrintWriter out = new PrintWriter(new FileWriter(ARCHIVO_VEHICULOS))) {
-            // Nota: Aquí se asume que puedes iterar o vaciar la cola para guardar
-            // Para persistencia simple, guardamos los datos básicos
             while(!colaVehiculos.isEmpty()){
                 VehiculoRecolector v = colaVehiculos.poll();
                 out.println(v.getId() + ";" + v.getCapMax());
@@ -142,7 +173,6 @@ public class SistemaEcoTrack {
     private void guardarZonas() {
         try (PrintWriter out = new PrintWriter(new FileWriter(ARCHIVO_ZONAS))) {
             for (Zona z : mapaZonas.values()) {
-                // Formato: nombre,pRecolectado,pPendiente
                 out.println(z.getNombre() + "," + (int)z.getpRecolectado() + "," + (int)z.getpPendiente());
             }
         } catch (IOException e) {
@@ -202,12 +232,47 @@ public class SistemaEcoTrack {
                 VehiculoRecolector v = new VehiculoRecolector(d[0], Double.parseDouble(d[1]),Double.parseDouble(d[2]), mapaZonas.get(d[3]));
                 v.setCargaActual(Double.parseDouble(d[2]));
                 v.asignarZona(mapaZonas.get(d[3]));
-                colaVehiculos.add(v);
+                colaVehiculos.offer(v);
             }
         } catch (Exception e) { System.err.println("Error cargando vehiculos"); }
     }
     
     public void inicializarDatos(){
-        
+        Zona norte = new Zona("Sector Norte", 0, 0);
+        Zona sur = new Zona("Sector Sur", 0, 0);
+        Zona centro = new Zona("Casco Central", 0, 0);
+
+        // Guardarlas en el mapa para que sean accesibles
+        mapaZonas.put(norte.getNombre(), norte);
+        mapaZonas.put(sur.getNombre(), sur);
+        mapaZonas.put(centro.getNombre(), centro);
+
+        // Crear Vehículos y asignarlos a las zonas
+        // Capacidad en kg (3000kg, 5000kg, etc.)
+        VehiculoRecolector v1 = new VehiculoRecolector("V-101", 3000.0);
+        v1.asignarZona(norte);
+
+        VehiculoRecolector v2 = new VehiculoRecolector("V-102", 5000.0);
+        v2.asignarZona(sur);
+
+        // Agregarlos a la PriorityQueue (se ordenarán por la prioridad de sus zonas)
+        colaVehiculos.offer(v1);
+        colaVehiculos.offer(v2);
+
+        // Crear Residuos Iniciales (7 atributos)
+        registrarResiduo(new Residuo("R-001", "Envases Plásticos", "Plástico", 12.5, 
+                         LocalDate.now(), norte, 2));
+
+        registrarResiduo(new Residuo("R-002", "Papel Periódico", "Papel", 5.0, 
+                         LocalDate.now().minusDays(1), norte, 1));
+
+        registrarResiduo(new Residuo("R-003", "Restos de Comida", "Orgánico", 25.0, 
+                         LocalDate.now(), sur, 3));
+
+        // 4. Inicializar algunas estadísticas en el Centro de Reciclaje
+        // Esto simula que ya se ha procesado algo antes
+        cReciclaje.getEstadisticasPorTipo().put("Plástico", 150.0);
+        cReciclaje.getEstadisticasPorTipo().put("Papel", 80.0);
+        cReciclaje.getEstadisticasPorZona().put("Sector Norte", 230.0);
     }
 }
