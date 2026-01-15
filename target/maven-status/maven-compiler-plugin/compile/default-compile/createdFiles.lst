@@ -13,6 +13,7 @@ estructuras\List.class
 estructuras\NodeList.class
 module-info.class
 com\mycompany\ecotrack\GestionResiduosController.class
+com\mycompany\ecotrack\GestionRutasController.class
 modelos\CentroReciclaje.class
 estructuras\LinkedList$1.class
 sistema\SistemaEcoTrack.class

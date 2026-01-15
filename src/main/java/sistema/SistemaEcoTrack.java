@@ -58,7 +58,7 @@ public class SistemaEcoTrack {
         return listaResiduos;
     }
     
-    public PriorityQueue<VehiculoRecolector> getVehiculo(){
+    public PriorityQueue<VehiculoRecolector> getVehiculos(){
         return colaVehiculos;
     }
     
@@ -116,6 +116,30 @@ public class SistemaEcoTrack {
             // Nota: Una vez que el vehículo termine su ruta, 
             // deberías volver a meterlo a la cola con colaVehiculos.add(vehiculo)
         }        
+    }
+    
+    
+    
+    public String obtenerZonaMasCritica() {
+        if (mapaZonas.isEmpty()) return "No hay zonas registradas";
+
+        Zona critica = null;
+        double menorUtilidad = Double.MAX_VALUE;
+
+        // Recorremos el mapa de zonas para encontrar la de mayor impacto (menor utilidad)
+        for (Zona z : mapaZonas.values()) {
+            double utilidadActual = z.calcularUtilidad(); 
+            if (utilidadActual < menorUtilidad) {
+                menorUtilidad = utilidadActual;
+                critica = z;
+            }
+        }
+        if(critica != null){
+            return critica.getNombre();
+        } else {
+            return "N/A";
+        }
+        
     }
     
     public void cargarDatos(){

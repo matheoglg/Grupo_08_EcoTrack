@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.text.Font?>
+
+<VBox spacing="20" alignment="TOP_CENTER" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mycompany.ecotrack.GestionRutasController" style="-fx-background-color: #f4f7f6;">
+    <padding>
+        <Insets top="25" right="25" bottom="25" left="25"/>
+    </padding>
+
+    <HBox alignment="CENTER_LEFT" spacing="10">
+        <Label text="EcoTrack" style="-fx-font-weight: bold; -fx-text-fill: #27ae60;">
+            <font>
+                <Font name="System Bold" size="24.0" />
+            </font>
+        </Label>
+        <Label text="| Rutas de Recolección" style="-fx-text-fill: #7f8c8d;">
+            <font>
+                <Font size="18.0" />
+            </font>
+        </Label>
+    </HBox>
+    
+    <Separator />
+
+    <HBox spacing="20" VBox.vgrow="ALWAYS">
+        
+        <VBox spacing="10" HBox.hgrow="ALWAYS" style="-fx-background-color: white; -fx-padding: 20; -fx-border-color: #dcdde1; -fx-border-radius: 15; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 5);">
+            <Label text="Vehículos en Espera (Cola de Prioridad)" style="-fx-font-weight: bold; -fx-text-fill: #2c3e50; -fx-font-size: 16;"/>
+            <TableView fx:id="tblVehiculos" VBox.vgrow="ALWAYS" style="-fx-background-radius: 5;">
+                <columns>
+                    <TableColumn fx:id="colIdVehiculo" text="ID Vehículo" prefWidth="120"/>
+                    <TableColumn fx:id="colCapacidad" text="Capacidad (kg)" prefWidth="140"/>
+                    <TableColumn fx:id="colEstado" text="Estado" prefWidth="120"/>
+                </columns>
+            </TableView>
+            <Label text="* Modelado mediante colas de prioridad según impacto ambiental." wrapText="true" style="-fx-font-size: 11; -fx-font-style: italic; -fx-text-fill: #95a5a6;"/>
+        </VBox>
+
+        <VBox spacing="20" prefWidth="400">
+            
+            <VBox spacing="12" style="-fx-background-color: white; -fx-padding: 20; -fx-border-color: #dcdde1; -fx-border-radius: 15; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 5);">
+                <Label text="Análisis de Zonas Críticas" style="-fx-font-weight: bold; -fx-text-fill: #e67e22; -fx-font-size: 15;"/>
+                <ListView fx:id="lstZonasCriticas" prefHeight="180" style="-fx-background-radius: 5;"/>
+                <Button text="Analizar Zona más Necesitada" onAction="#handleAnalizar" maxWidth="Infinity" prefHeight="35"
+                        style="-fx-background-color: #ecf0f1; -fx-text-fill: #2c3e50; -fx-font-weight: bold; -fx-cursor: hand; -fx-background-radius: 20;"/>
+            </VBox>
+
+            <VBox spacing="15" alignment="CENTER" style="-fx-background-color: white; -fx-padding: 25; -fx-border-color: #27ae60; -fx-border-width: 2; -fx-border-radius: 15; -fx-effect: dropshadow(three-pass-box, rgba(46, 204, 113, 0.2), 15, 0, 0, 0);">
+                <Label text="Despacho Automático" style="-fx-font-weight: bold; -fx-font-size: 16; -fx-text-fill: #27ae60;"/>
+                <Label fx:id="lblInfoDespacho" text="Listo para asignar ruta..." textAlignment="CENTER" wrapText="true" style="-fx-text-fill: #7f8c8d;"/>
+                
+                <Button text="DESPACHAR SIGUIENTE" onAction="#handleDespachar" 
+                        prefHeight="50" maxWidth="Infinity" 
+                        style="-fx-background-color: #2ecc71; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14; -fx-cursor: hand; -fx-background-radius: 25;"/>
+            </VBox>
+        </VBox>
+    </HBox>
+
+    <Button text="Regresar al Menú Principal" onAction="#handleRegresar" prefWidth="250" prefHeight="35"
+            style="-fx-background-color: #95a5a6; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand; -fx-background-radius: 20;"/>
+</VBox>

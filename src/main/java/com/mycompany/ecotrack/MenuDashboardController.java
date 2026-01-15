@@ -31,7 +31,7 @@ public class MenuDashboardController {
 
     @FXML
     private void goToLogistica(ActionEvent event) {
-        cambiarEscena("logistica.fxml", "EcoTrack - Rutas de Recolección");
+        cambiarEscena("GestionRutas.fxml", "EcoTrack - Rutas de Recolección");
     }
 
     @FXML
