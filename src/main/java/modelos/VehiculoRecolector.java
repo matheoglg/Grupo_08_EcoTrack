@@ -52,7 +52,7 @@ public class VehiculoRecolector implements Comparable<VehiculoRecolector>{
         // para recolectar basura.
         if (zonaRecoleccion == null) return 0;
         
-        // Ejemplo: Prioridad basada en el peso pendiente de la zona
+        //Prioridad basada en el peso pendiente de la zona
         return zonaRecoleccion.getpPendiente();
     }
 
