@@ -148,22 +148,9 @@ public class GestionResiduosController {
         sistema.guardarDatos();
         mostrarAlerta("Guardado", "Los datos se han guardado correctamente");
         
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("MenuDashboard.fxml"));
-            Parent root = loader.load();
-
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.show();
-        
-        } catch (IOException e) {
-            mostrarAlerta("Error", "No se pudo cargar la pantalla principal: " + e.getMessage());
-            e.printStackTrace();
-        }
     }
     
+    @FXML
     private void irAlMenu(ActionEvent event) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("MenuDashboard.fxml"));

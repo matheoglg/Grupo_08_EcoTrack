@@ -10,16 +10,23 @@
         <Insets top="20" right="20" bottom="20" left="20"/>
     </padding>
 
-    <Label text="GESTIÓN DE RESIDUOS" style="-fx-font-weight: bold; -fx-text-fill: #2c3e50;">
-        <font>
-            <Font size="26.0" />
-        </font>
-    </Label>
+    <HBox alignment="CENTER_LEFT" spacing="10">
+        <Label text="EcoTrack" style="-fx-font-weight: bold; -fx-text-fill: #27ae60;">
+            <font>
+                <Font name="System Bold" size="24.0" />
+            </font>
+        </Label>
+        <Label text="| Gestión de Residuos" style="-fx-text-fill: #7f8c8d;">
+            <font>
+                <Font size="18.0" />
+            </font>
+        </Label>
+    </HBox>
     <Separator />
 
     <HBox spacing="30" alignment="CENTER" VBox.vgrow="ALWAYS">
         
-        <VBox spacing="10" style="-fx-background-color: white; -fx-padding: 20; -fx-border-color: #dcdde1; -fx-border-radius: 10; -fx-background-radius: 10;" prefWidth="400">
+        <VBox spacing="15" style="-fx-background-color: white; -fx-padding: 20; -fx-border-color: #dcdde1; -fx-border-radius: 15; -fx-background-radius: 15; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 5);" prefWidth="400">
             <Label text="Registrar Nuevo Residuo" style="-fx-font-size: 16; -fx-font-weight: bold; -fx-text-fill: #27ae60;"/>
             
             <GridPane hgap="10" vgap="12">
@@ -45,10 +52,13 @@
                 <Slider fx:id="sldPrioridad" min="1" max="5" value="1" majorTickUnit="1" minorTickCount="0" showTickLabels="true" snapToTicks="true" GridPane.rowIndex="6" GridPane.columnIndex="1"/>
             </GridPane>
             
-            <Button text="Registrar Residuo" onAction="#handleRegistrar" maxWidth="Infinity" prefHeight="40" style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand;"/>
+            <VBox spacing="10">
+                <Button text="Registrar en Lista" onAction="#handleRegistrar" maxWidth="Infinity" prefHeight="35" style="-fx-background-color: #2ecc71; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand; -fx-background-radius: 20;"/>
+                <Button text="Guardar Cambios (.txt)" onAction="#handleGuardar" maxWidth="Infinity" prefHeight="35" style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand; -fx-background-radius: 20;"/>
+            </VBox>
         </VBox>
 
-        <VBox spacing="15" prefWidth="450" style="-fx-background-color: white; -fx-padding: 20; -fx-border-color: #3498db; -fx-border-radius: 10; -fx-background-radius: 10;">
+        <VBox spacing="15" prefWidth="450" style="-fx-background-color: white; -fx-padding: 20; -fx-border-color: #dcdde1; -fx-border-radius: 15; -fx-background-radius: 15; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 5);">
             
             <HBox spacing="10" alignment="CENTER_LEFT" style="-fx-background-color: #ecf0f1; -fx-padding: 10; -fx-background-radius: 5;">
                 <Label text="Ordenar residuos por:" style="-fx-font-weight: bold;"/>
@@ -80,12 +90,12 @@
             </VBox>
 
             <HBox spacing="20" alignment="CENTER">
-                <Button text="◀ Anterior" onAction="#handleAnterior" prefWidth="120" prefHeight="35" style="-fx-background-color: #34495e; -fx-text-fill: white; -fx-cursor: hand;"/>
+                <Button text="◀ Anterior" onAction="#handleAnterior" prefWidth="120" prefHeight="35" style="-fx-background-color: #34495e; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 20;"/>
                 <Label fx:id="lblContador" text="Residuos: 0" style="-fx-font-style: italic;"/>
-                <Button text="Siguiente ▶" onAction="#handleSiguiente" prefWidth="120" prefHeight="35" style="-fx-background-color: #34495e; -fx-text-fill: white; -fx-cursor: hand;"/>
+                <Button text="Siguiente ▶" onAction="#handleSiguiente" prefWidth="120" prefHeight="35" style="-fx-background-color: #34495e; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 20;"/>
             </HBox>
         </VBox>
     </HBox>
 
-    <Button text="Guardar Cambios y Regresar al Menú" onAction="#handleGuardar" prefWidth="300" prefHeight="40" style="-fx-background-color: #c0392b; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand;"/>
+    <Button text="Regresar al Menú Principal" onAction="#irAlMenu" prefWidth="300" prefHeight="40" style="-fx-background-color: #95a5a6; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand; -fx-background-radius: 25;"/>
 </VBox>
