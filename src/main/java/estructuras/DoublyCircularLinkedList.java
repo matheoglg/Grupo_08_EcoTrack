@@ -4,11 +4,12 @@
  */
 package estructuras;
 
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 
-public class DoublyCircularLinkedList<E> implements List<E>{
+public class DoublyCircularLinkedList<E> implements List<E>, Iterable<E>{
     private DoublyNodeList<E> head;
     private DoublyNodeList<E> last;
 
@@ -184,6 +185,35 @@ public class DoublyCircularLinkedList<E> implements List<E>{
         return old;
     }
 
+    public void ordenar(Comparator<E> comparador) {
+        // Si la lista tiene 0 o 1 elemento, no hay nada que ordenar
+        if (head == null || head == last) {
+            return;
+        }
+
+        boolean huboIntercambio;
+        int n = size();
+
+        do {
+            huboIntercambio = false;
+            DoublyNodeList<E> actual = head;
+
+            for (int i = 0; i < n - 1; i++) {
+                DoublyNodeList<E> siguiente = actual.getNext();
+
+                if (comparador.compare(actual.getContent(), siguiente.getContent()) > 0) {
+                    E temp = actual.getContent();
+                    actual.setContent(siguiente.getContent());
+                    siguiente.setContent(temp);
+
+                    huboIntercambio = true;
+                }
+                actual = siguiente;
+            }
+            // Cada pasada completa coloca el elemento más grande al final
+            n--; 
+        } while (huboIntercambio);
+    }
     @Override
     public Iterator<E> iterator() {
         return new ListIterator();

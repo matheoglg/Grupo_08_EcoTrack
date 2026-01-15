@@ -5,15 +5,22 @@
 package com.mycompany.ecotrack;
 
 import estructuras.DoublyCircularLinkedList;
+import java.io.IOException;
 import java.time.LocalDate;
 import javafx.collections.FXCollections;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
+import javafx.stage.Stage;
 import modelos.Residuo;
 import modelos.Zona;
 import sistema.SistemaEcoTrack;
@@ -38,6 +45,8 @@ public class GestionResiduosController {
     @FXML private Label lblResumenTipo;
     @FXML private Label lblResumenPrioridad;
     @FXML private Label lblContador;
+    @FXML private ComboBox<String> cmbOrden;
+    @FXML private Label lblResumenPeso, lblResumenFecha, lblResumenZona;
 
     private DoublyCircularLinkedList<Residuo>.ListIterator iteradorUI;
     private SistemaEcoTrack sistema = SistemaEcoTrack.getInstancia();
@@ -48,6 +57,8 @@ public class GestionResiduosController {
         
         cmbZona.setItems(FXCollections.observableArrayList(sistema.getMapaZonas().values()));
         
+        cmbOrden.setItems(FXCollections.observableArrayList("Prioridad", "Peso", "Tipo"));
+        cmbOrden.setValue("Prioridad");
         // Configurar el Iterador al iniciar
         configurarIterador();
     }
@@ -102,22 +113,51 @@ public class GestionResiduosController {
     }
 
     private void actualizarVisor() {
-        Residuo actual = iteradorUI.getCurrentContent();
-        if (actual != null) {
-            lblResumenId.setText("ID: " + actual.getId());
-            lblResumenNombre.setText("Nombre: " + actual.getNombre());
-            lblResumenTipo.setText("Tipo: " + actual.getTipo());
-            lblResumenPrioridad.setText("Prioridad: " + actual.getPrioridadAmbiental());
-            
-            int total = sistema.getResiduos().size();
-            lblContador.setText("Explorando lista circular (" + total + " registros)");
+        Residuo r = iteradorUI.getCurrentContent();
+        if (r != null) {
+            lblResumenId.setText("ID: " + r.getId());
+            lblResumenNombre.setText("Nombre: " + r.getNombre());
+            lblResumenTipo.setText("Tipo: " + r.getTipo());
+            lblResumenPeso.setText("Peso: " + r.getPeso() + " kg");
+            lblResumenFecha.setText("Fecha: " + r.getFechaRecoleccion().toString());
+            lblResumenZona.setText("Zona: " + r.getZona().getNombre());
+            lblResumenPrioridad.setText("Prioridad: " + r.getPrioridadAmbiental());
         }
     }
 
     @FXML
-    private void handleGuardar() {
+    private void handleCambiarOrden() {
+        String opcion = cmbOrden.getValue();
+        if (opcion.equals("Peso")) {
+            sistema.getResiduos().ordenar(Residuo.PorPeso);
+        } else if (opcion.equals("Tipo")) {
+            sistema.getResiduos().ordenar(Residuo.PorTipo);
+        } else {
+            sistema.getResiduos().ordenar(Residuo.PorPrioridad);
+        }
+
+        // IMPORTANTE: Después de ordenar, reinicia el iterador
+        configurarIterador(); 
+    }
+    @FXML
+    private void handleGuardar(ActionEvent event) {
         sistema.guardarDatos();
-        mostrarAlerta("Guardado", "Los datos se han persistido en los archivos .txt");
+        mostrarAlerta("Guardado", "Los datos se han guardado correctamente");
+        
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("MenuDashboard.fxml"));
+            Parent root = loader.load();
+
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.show();
+        
+        } catch (IOException e) {
+            mostrarAlerta("Error", "No se pudo cargar la pantalla principal: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     private void limpiarCampos() {
