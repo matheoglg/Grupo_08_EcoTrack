@@ -37,7 +37,7 @@ public class MenuDashboardController {
 
     @FXML
     private void goToEstadisticas(ActionEvent event) {
-        cambiarEscena(event,"estadisticas.fxml", "EcoTrack - Centro de Reciclaje");
+        cambiarEscena(event,"GestionCentro.fxml", "EcoTrack - Centro de Reciclaje");
     }
 
     @FXML
