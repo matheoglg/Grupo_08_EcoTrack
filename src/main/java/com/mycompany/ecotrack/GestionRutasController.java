@@ -44,29 +44,24 @@ public class GestionRutasController {
     public void initialize() {
         // Configurar cómo se mostrarán los datos en las columnas de la tabla
         colIdVehiculo.setCellValueFactory(new PropertyValueFactory<>("id"));
-        colCapacidad.setCellValueFactory(new PropertyValueFactory<>("capacidad"));
-        colEstado.setCellValueFactory(new PropertyValueFactory<>("estado"));
-        
+        colCapacidad.setCellValueFactory(new PropertyValueFactory<>("capMax"));
+        colEstado.setCellValueFactory(new PropertyValueFactory<>("cargaActual"));
+        colEstado.setText("Carga Actual (kg)");
         actualizarTablas();
     }
 
     private void actualizarTablas() {
-        // Solución al error de Iterable: Convertir manualmente tu PriorityQueue a List
         List<VehiculoRecolector> listaTemporal = new ArrayList<>();
         
-        // Asumiendo que tu PriorityQueue tiene un método para obtener el arreglo interno 
-        // o que usas una copia para no vaciar la original del sistema
         if (sistema.getVehiculos() != null) {
-            // Si no tienes clonar(), vaciamos una copia temporal
-            var copiaTemporal = sistema.getVehiculos(); 
-            while (!copiaTemporal.isEmpty()) {
-                listaTemporal.add(copiaTemporal.dequeue()); // poll() respeta la prioridad
+            PriorityQueue<VehiculoRecolector> copy = sistema.obtenerCopiaVehiculos(); 
+            while (!copy.isEmpty()) {
+                listaTemporal.add(copy.dequeue());
             }
         }
-        
         tblVehiculos.setItems(FXCollections.observableArrayList(listaTemporal));
 
-        // Actualizar análisis de zonas críticas (basado en impacto/volumen)
+        //zonas criticas
         lstZonasCriticas.getItems().clear();
         for (Zona z : sistema.getMapaZonas().values()) {
             double impacto = z.calcularUtilidad(); // Menor utilidad = mayor impacto/prioridad

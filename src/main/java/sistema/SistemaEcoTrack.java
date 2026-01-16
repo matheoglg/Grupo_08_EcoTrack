@@ -9,6 +9,8 @@ import estructuras.Stack;
 import java.io.*;
 import java.time.LocalDate;
 import estructuras.PriorityQueue;
+import java.util.ArrayList; 
+import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -46,6 +48,9 @@ public class SistemaEcoTrack {
         );
         mapaZonas = new HashMap<>();
         cargarDatos();
+        if (colaVehiculos.isEmpty()) {
+            inicializarDatos();
+        }
     }
     
     public static SistemaEcoTrack getInstancia() {
@@ -100,36 +105,35 @@ public class SistemaEcoTrack {
     
     public void despacharVehiculo(){
         if (colaVehiculos.isEmpty()) {
-            return;
+            System.out.println("No hay vehículos disponibles para despacho.");
+            return; 
         }
-
-        // Buscar la zona más crítica (la de menor utilidad ambiental)
+        //requerimiento: zona con - utilidad ambiental y + basura
         Zona zonaCritica = null;
         double menorUtilidad = Double.MAX_VALUE;
+        int maxBasura = -1;
 
         for (Zona z : mapaZonas.values()) {
-            int utilidadActual = z.calcularUtilidad();
-            if (utilidadActual < menorUtilidad) {
-                menorUtilidad = utilidadActual;
+            int utilidadAct = z.calcularUtilidad();
+            int basuraPendiente = z.getpPendiente();
+            
+            if (utilidadAct < menorUtilidad || (utilidadAct == menorUtilidad && basuraPendiente > maxBasura)) {
+                menorUtilidad = utilidadAct;
+                maxBasura = basuraPendiente;
                 zonaCritica = z;
             }
         }
-
-        // Obtener el vehículo con mayor prioridad (el primero de la cola)
-        // .poll() extrae y elimina el elemento de la cabeza de la cola
-        if (zonaCritica != null) {
-            VehiculoRecolector vehiculo = colaVehiculos.dequeue(); 
-
-            //asignar el vehículo a la zona crítica
-            vehiculo.asignarZona(zonaCritica);
-
-            System.out.println("DESPACHO: El vehículo " + vehiculo.getId() + 
-                               " ha sido enviado a la zona: " + zonaCritica.getNombre() + 
-                               " (Utilidad: " + menorUtilidad + ")");
-
-            //Una vez que el vehículo termine su ruta, 
-            //se deberia meter a la cola con colaVehiculos.add(vehiculo)
-        }        
+        if (zonaCritica != null && zonaCritica.getpPendiente() > 0) {
+            //vehículo con + prioridad de la cola
+            VehiculoRecolector v = colaVehiculos.dequeue();
+            v.asignarZona(zonaCritica);
+            //volver a la cola para la persistencia
+            colaVehiculos.enqueue(v);
+            System.out.println("Vehículo " + v.getId() + " despachado a " + zonaCritica.getNombre());
+            registrarCambio();
+        } else {
+            System.out.println("No se requiere despacho");
+        }
     }
     
     
@@ -167,7 +171,6 @@ public class SistemaEcoTrack {
         if (listaResiduos.isEmpty()) {
             inicializarDatos();
         }
-        
         this.cambiosP = false;
     }
     
@@ -218,9 +221,10 @@ public class SistemaEcoTrack {
     
     
     private void guardarVehiculos() {
+        PriorityQueue<VehiculoRecolector> copy = obtenerCopiaVehiculos();
         try (PrintWriter out = new PrintWriter(new FileWriter(ARCHIVO_VEHICULOS))) {
-            while(!colaVehiculos.isEmpty()){
-                VehiculoRecolector v = colaVehiculos.dequeue();
+            while(!copy.isEmpty()){
+                VehiculoRecolector v = copy.dequeue();
                 String nombreZona = (v.getZonaRecoleccion() != null) ? v.getZonaRecoleccion().getNombre() : "Sin Zona";
                 out.println(v.getId() + ";" +  v.getCapMax() + ";" +v.getCargaActual() + ";" + nombreZona);
             }  
@@ -305,20 +309,23 @@ public class SistemaEcoTrack {
     
     private void cargarVehiculos() {
         File f = new File(ARCHIVO_VEHICULOS);
-        if (!f.exists()) return;
+        if (!f.exists()){
+            System.out.println("Archivo vehiculos.txt no existe.");
+            return;
+        }
         try (Scanner sc = new Scanner(f)) {
             while (sc.hasNextLine()) {
                 String linea = sc.nextLine();
                 if (linea.trim().isEmpty()) continue;
                 String[] d = linea.split(";");    
-                if (d.length >= 4) {
-                VehiculoRecolector v = new VehiculoRecolector(d[0], Double.parseDouble(d[1]),Double.parseDouble(d[2]), mapaZonas.get(d[3]));
-                v.setCargaActual(Double.parseDouble(d[2]));
-                Zona zonaAsignada=mapaZonas.get(d[3]);
-                if (zonaAsignada != null) {
-                    v.asignarZona(zonaAsignada);
-                }
-                colaVehiculos.enqueue(v);
+                if (d.length >= 3) {
+                    VehiculoRecolector v = new VehiculoRecolector(d[0], Double.parseDouble(d[1]),Double.parseDouble(d[2]), mapaZonas.get(d[3]));
+                    v.setCargaActual(Double.parseDouble(d[2]));
+                    if (d.length >= 4 && !d[3].equals("Sin Zona")) {
+                        Zona z = mapaZonas.get(d[3]);
+                        if (z != null) v.asignarZona(z);
+                    }
+                    colaVehiculos.enqueue(v);
                 }
             }   
         } catch (Exception e) { System.err.println("Error cargando vehiculos"); }
@@ -341,6 +348,24 @@ public class SistemaEcoTrack {
         return String.format("R-%03d", maxId + 1);
     }
     
+    
+    //copia de la cola para la interfaz
+    public PriorityQueue<VehiculoRecolector> obtenerCopiaVehiculos() {
+        PriorityQueue<VehiculoRecolector> copia = new PriorityQueue<>();
+        List<VehiculoRecolector> listaTemporal = new ArrayList<>();
+
+        //vaciamos la original a una lista temporal
+        while (!this.colaVehiculos.isEmpty()) {
+            listaTemporal.add(this.colaVehiculos.dequeue());
+        }
+        //se llenan ambas
+        for (VehiculoRecolector v : listaTemporal) {
+            this.colaVehiculos.enqueue(v); 
+            copia.enqueue(v);             
+        }
+
+        return copia;
+    }
     
     
     public void inicializarDatos(){
