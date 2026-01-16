@@ -30,16 +30,20 @@ public class SistemaEcoTrack {
     private CentroReciclaje cReciclaje;
     private Map<String, Zona> mapaZonas;
     private boolean cambiosP = false;
+    private Map<String, String> credencialesUser;
+    
     
     private final String ARCHIVO_RESIDUOS = "residuos.txt";
     private final String ARCHIVO_ESTADISTICAS = "estadisticas.txt";
     private final String ARCHIVO_VEHICULOS = "vehiculos.txt";
     private final String ARCHIVO_ZONAS = "zonas.txt";
+    private final String ARCHIVO_USUARIOS = "usuarios.txt";
     
     private SistemaEcoTrack() {
         // Inicializar estructuras
         listaResiduos = new DoublyCircularLinkedList<>();
         colaVehiculos = new PriorityQueue<>();
+        credencialesUser = new HashMap<>();
         // Intentar cargar desde persistencia
         cReciclaje = new CentroReciclaje(
             new Stack<Residuo>(), 
@@ -75,6 +79,8 @@ public class SistemaEcoTrack {
     public CentroReciclaje getCentroReciclaje(){
         return cReciclaje;
     }
+    
+    
     
     public void registrarResiduo(Residuo r){
         if (r != null&& r.getZona() != null) {
@@ -168,6 +174,7 @@ public class SistemaEcoTrack {
         //los que dependen de las zonas
         cargarResiduos();
         cargarVehiculos();
+        cargarUsuarios();
         if (listaResiduos.isEmpty()) {
             inicializarDatos();
         }
@@ -179,6 +186,7 @@ public class SistemaEcoTrack {
         guardarEstadisticas();
         guardarVehiculos();
         guardarZonas();
+        guardarUsuarios();
         System.out.println("Datos sincronizados con exito.");
     }
     
@@ -349,6 +357,47 @@ public class SistemaEcoTrack {
         return String.format("R-%03d", maxId + 1);
     }
     
+    private void cargarUsuarios() {
+        File f = new File(ARCHIVO_USUARIOS);
+        if (!f.exists()) return;
+        try (Scanner sc = new Scanner(f)) {
+            while (sc.hasNextLine()) {
+                String linea = sc.nextLine();
+                if (linea.trim().isEmpty()) continue;
+                String[] d = linea.split(",");
+                if (d.length == 2) {
+                    credencialesUser.put(d[0], d[1]);
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Error cargando usuarios: " + e.getMessage());
+        }   
+    }
+    
+    private void guardarUsuarios() {
+        try (PrintWriter out = new PrintWriter(new FileWriter(ARCHIVO_USUARIOS))) {
+            for (Map.Entry<String, String> entry : credencialesUser.entrySet()) {
+                out.println(entry.getKey() + "," + entry.getValue());
+            }
+        } catch (IOException e) {
+            System.err.println("Error guardando usuarios: " + e.getMessage());
+        }
+    }
+    
+    public boolean validarLogin(String user, String pass) {
+        if (user == null || pass == null) return false;
+        String passwordAlmacenada = credencialesUser.get(user);
+        return passwordAlmacenada != null && passwordAlmacenada.equals(pass);
+    }
+    
+    public boolean registrarUsuario(String user, String pass) {
+        if (credencialesUser.containsKey(user)) {
+            return false; //usuario existe
+        }
+        credencialesUser.put(user, pass);
+        guardarUsuarios(); //persistencia 
+        return true;
+    }
     
     //copia de la cola para la interfaz
     public PriorityQueue<VehiculoRecolector> obtenerCopiaVehiculos() {
