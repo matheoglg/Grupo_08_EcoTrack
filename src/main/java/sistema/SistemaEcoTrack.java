@@ -30,20 +30,16 @@ public class SistemaEcoTrack {
     private CentroReciclaje cReciclaje;
     private Map<String, Zona> mapaZonas;
     private boolean cambiosP = false;
-    private Map<String, String> credencialesUser;
-    
     
     private final String ARCHIVO_RESIDUOS = "residuos.txt";
     private final String ARCHIVO_ESTADISTICAS = "estadisticas.txt";
     private final String ARCHIVO_VEHICULOS = "vehiculos.txt";
     private final String ARCHIVO_ZONAS = "zonas.txt";
-    private final String ARCHIVO_USUARIOS = "usuarios.txt";
     
     private SistemaEcoTrack() {
         // Inicializar estructuras
         listaResiduos = new DoublyCircularLinkedList<>();
         colaVehiculos = new PriorityQueue<>();
-        credencialesUser = new HashMap<>();
         // Intentar cargar desde persistencia
         cReciclaje = new CentroReciclaje(
             new Stack<Residuo>(), 
@@ -80,8 +76,6 @@ public class SistemaEcoTrack {
         return cReciclaje;
     }
     
-    
-    
     public void registrarResiduo(Residuo r){
         if (r != null&& r.getZona() != null) {
             listaResiduos.addLast(r);
@@ -114,35 +108,69 @@ public class SistemaEcoTrack {
             System.out.println("No hay vehículos disponibles para despacho.");
             return; 
         }
-        //requerimiento: zona con - utilidad ambiental y + basura
+
+        // Zona con menor utilidad y mas basura
         Zona zonaCritica = null;
         double menorUtilidad = Double.MAX_VALUE;
         int maxBasura = -1;
 
         for (Zona z : mapaZonas.values()) {
-            int utilidadAct = z.calcularUtilidad();
+            double utilidadAct = z.calcularUtilidad();
             int basuraPendiente = z.getpPendiente();
-            
+
+            // Menor utilidad, sino, con mas basura
             if (utilidadAct < menorUtilidad || (utilidadAct == menorUtilidad && basuraPendiente > maxBasura)) {
                 menorUtilidad = utilidadAct;
                 maxBasura = basuraPendiente;
                 zonaCritica = z;
             }
         }
+
+        // Despacho si necesita recoleccion
         if (zonaCritica != null && zonaCritica.getpPendiente() > 0) {
-            //vehículo con + prioridad de la cola
+            // Vehiculo con mayor prioridad
             VehiculoRecolector v = colaVehiculos.dequeue();
             v.asignarZona(zonaCritica);
-            //volver a la cola para la persistencia
+
+            // Recolección
+            Residuo recolectado = null;
+            int totalResiduos = listaResiduos.size();
+
+            for (int i = 0; i < totalResiduos; i++) {
+                Residuo r = listaResiduos.get(i); 
+
+                if (r.getZona().getNombre().equals(zonaCritica.getNombre())) {
+                    double cargaPrevia = v.getCargaActual();
+                    v.agregarResiduo(r); 
+
+                    if (v.getCargaActual() > cargaPrevia) {
+                        recolectado = r;
+                        recolectado.setVehiculoTransportador(v); 
+
+                        // Se elimina de la calle
+                        listaResiduos.remove(i); 
+                        break; 
+                    }
+                }
+            }
+
+            // Traslado a central
+            if (recolectado != null) {
+                cReciclaje.apilarResiduo(recolectado);
+                System.out.println("Vehículo " + v.getId() + " cargó residuo " + recolectado.getId() + " y lo llevó al centro.");
+            } else {
+                System.out.println("El vehículo " + v.getId() + " llegó a la zona pero no pudo cargar residuos (exceso de peso).");
+            }
+
+            // El vehiculo vuelve a encolarse
             colaVehiculos.enqueue(v);
-            System.out.println("Vehículo " + v.getId() + " despachado a " + zonaCritica.getNombre());
             registrarCambio();
+
         } else {
-            System.out.println("No se requiere despacho");
+            System.out.println("No se requiere despacho en este momento: zonas estables.");
         }
     }
-    
-    
+  
     
     public String obtenerZonaMasCritica() {
         if (mapaZonas.isEmpty()) return "No hay zonas registradas";
@@ -174,7 +202,6 @@ public class SistemaEcoTrack {
         //los que dependen de las zonas
         cargarResiduos();
         cargarVehiculos();
-        cargarUsuarios();
         if (listaResiduos.isEmpty()) {
             inicializarDatos();
         }
@@ -186,8 +213,6 @@ public class SistemaEcoTrack {
         guardarEstadisticas();
         guardarVehiculos();
         guardarZonas();
-        guardarUsuarios();
-        System.out.println("Datos sincronizados con exito.");
     }
     
     private void guardarResiduos() {
@@ -321,23 +346,25 @@ public class SistemaEcoTrack {
             System.out.println("Archivo vehiculos.txt no existe.");
             return;
         }
-        while(!colaVehiculos.isEmpty()) colaVehiculos.dequeue();
+        while(!colaVehiculos.isEmpty()){
+            colaVehiculos.dequeue();
+        }
+
         try (Scanner sc = new Scanner(f)) {
             while (sc.hasNextLine()) {
                 String linea = sc.nextLine();
                 if (linea.trim().isEmpty()) continue;
                 String[] d = linea.split(";");    
                 if (d.length >= 3) {
-                    VehiculoRecolector v = new VehiculoRecolector(d[0], Double.parseDouble(d[1]),Double.parseDouble(d[2]), mapaZonas.get(d[3]));
+                    Zona z = (d.length >= 4) ? mapaZonas.get(d[3]) : null;
+
+                    VehiculoRecolector v = new VehiculoRecolector(d[0], Double.parseDouble(d[1]), Double.parseDouble(d[2]), z);
                     v.setCargaActual(Double.parseDouble(d[2]));
-                    if (d.length >= 4 && !d[3].equals("Sin Zona")) {
-                        Zona z = mapaZonas.get(d[3]);
-                        if (z != null) v.asignarZona(z);
-                    }
+
                     colaVehiculos.enqueue(v);
                 }
             }   
-        } catch (Exception e) { System.err.println("Error cargando vehiculos"); }
+        } catch (Exception e) { System.err.println("Error cargando vehiculos: " + e.getMessage()); }
     }
     
     
@@ -357,47 +384,6 @@ public class SistemaEcoTrack {
         return String.format("R-%03d", maxId + 1);
     }
     
-    private void cargarUsuarios() {
-        File f = new File(ARCHIVO_USUARIOS);
-        if (!f.exists()) return;
-        try (Scanner sc = new Scanner(f)) {
-            while (sc.hasNextLine()) {
-                String linea = sc.nextLine();
-                if (linea.trim().isEmpty()) continue;
-                String[] d = linea.split(",");
-                if (d.length == 2) {
-                    credencialesUser.put(d[0], d[1]);
-                }
-            }
-        } catch (Exception e) {
-            System.err.println("Error cargando usuarios: " + e.getMessage());
-        }   
-    }
-    
-    private void guardarUsuarios() {
-        try (PrintWriter out = new PrintWriter(new FileWriter(ARCHIVO_USUARIOS))) {
-            for (Map.Entry<String, String> entry : credencialesUser.entrySet()) {
-                out.println(entry.getKey() + "," + entry.getValue());
-            }
-        } catch (IOException e) {
-            System.err.println("Error guardando usuarios: " + e.getMessage());
-        }
-    }
-    
-    public boolean validarLogin(String user, String pass) {
-        if (user == null || pass == null) return false;
-        String passwordAlmacenada = credencialesUser.get(user);
-        return passwordAlmacenada != null && passwordAlmacenada.equals(pass);
-    }
-    
-    public boolean registrarUsuario(String user, String pass) {
-        if (credencialesUser.containsKey(user)) {
-            return false; //usuario existe
-        }
-        credencialesUser.put(user, pass);
-        guardarUsuarios(); //persistencia 
-        return true;
-    }
     
     //copia de la cola para la interfaz
     public PriorityQueue<VehiculoRecolector> obtenerCopiaVehiculos() {

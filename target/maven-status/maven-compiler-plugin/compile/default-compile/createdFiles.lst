@@ -1,4 +1,3 @@
-modelos\Usuario.class
 estructuras\LinkedList.class
 estructuras\DoublyCircularLinkedList$ListIterator.class
 com\mycompany\ecotrack\LoginController.class
@@ -12,6 +11,7 @@ com\mycompany\ecotrack\GestionRutasController.class
 estructuras\LinkedList$1.class
 modelos\VehiculoRecolector.class
 com\mycompany\ecotrack\MenuDashboardController.class
+com\mycompany\ecotrack\GestionCentroController.class
 estructuras\Stack.class
 modelos\Residuo.class
 estructuras\DoublyCircularLinkedList.class

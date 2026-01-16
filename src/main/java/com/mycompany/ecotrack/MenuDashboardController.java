@@ -9,7 +9,6 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -27,22 +26,22 @@ public class MenuDashboardController {
     
     @FXML
     private void goToResiduos(ActionEvent event) {
-        cambiarEscena(event,"GestionResiduos.fxml", "EcoTrack - Gestión de Residuos");
+        cambiarEscena("GestionResiduos.fxml", "EcoTrack - Gestión de Residuos");
     }
 
     @FXML
     private void goToLogistica(ActionEvent event) {
-        cambiarEscena(event,"GestionRutas.fxml", "EcoTrack - Rutas de Recolección");
+        cambiarEscena("GestionRutas.fxml", "EcoTrack - Rutas de Recolección");
     }
 
     @FXML
     private void goToEstadisticas(ActionEvent event) {
-        cambiarEscena(event,"estadisticas.fxml", "EcoTrack - Centro de Reciclaje");
+        cambiarEscena("GestionCentro.fxml", "EcoTrack - Centro de Reciclaje");
     }
 
     @FXML
     private void handleLogout(ActionEvent event) {
-        //confirmación antes de salir
+        // 1. Opcional: Confirmación antes de salir
         Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
         confirmacion.setTitle("Cerrar Sesión");
         confirmacion.setHeaderText(null);
@@ -51,19 +50,21 @@ public class MenuDashboardController {
         confirmacion.showAndWait().ifPresent(response -> {
             if (response == javafx.scene.control.ButtonType.OK) {
                 
-                cambiarEscena(event,"VentanaInicio.fxml", "EcoTrack");
+                cambiarEscena("VentanaInicio.fxml", "EcoTrack");
             }
         });
     }
 
     
     // Método para cambiar de pantalla sin repetir código en los otros métodos
-     
-    private void cambiarEscena(ActionEvent event, String fxml, String titulo) {
+    
+    private void cambiarEscena(String fxml, String titulo) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxml));
             Parent root = loader.load();
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+
+            Stage stage = (Stage) btnResiduos.getScene().getWindow();
+
             boolean wasMaximized = stage.isMaximized();
             double currentWidth = stage.getWidth();
             double currentHeight = stage.getHeight();
