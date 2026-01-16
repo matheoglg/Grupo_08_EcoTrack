@@ -424,7 +424,7 @@ public class SistemaEcoTrack {
         VehiculoRecolector v2 = new VehiculoRecolector("V-102", 5000.0);
         v2.asignarZona(sur);
 
-        // Agregarlos a la PriorityQueue (se ordenarán por la prioridad de sus zonas)
+        // Agregarlos a la PriorityQueue 
         colaVehiculos.enqueue(v1);
         colaVehiculos.enqueue(v2);
 

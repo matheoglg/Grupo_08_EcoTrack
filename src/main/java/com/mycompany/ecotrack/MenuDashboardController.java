@@ -41,7 +41,6 @@ public class MenuDashboardController {
 
     @FXML
     private void handleLogout(ActionEvent event) {
-        // 1. Opcional: Confirmación antes de salir
         Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
         confirmacion.setTitle("Cerrar Sesión");
         confirmacion.setHeaderText(null);
@@ -69,7 +68,7 @@ public class MenuDashboardController {
             double currentWidth = stage.getWidth();
             double currentHeight = stage.getHeight();
 
-            Scene scene = new Scene(root, currentWidth, currentHeight); // Forzamos el tamaño actual
+            Scene scene = new Scene(root, currentWidth, currentHeight); 
             stage.setScene(scene);
             stage.setTitle(titulo);
 

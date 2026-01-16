@@ -54,7 +54,7 @@
                         <VBox alignment="CENTER" prefHeight="260.0" prefWidth="240.0" spacing="15.0" 
                               style="-fx-background-color: white; -fx-background-radius: 20; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.08), 15, 0, 0, 5);">
                             <children>
-                                <Label text="♻️" style="-fx-font-size: 45;" />
+                                <Label text="&#x267B;" style="-fx-font-size: 45;" />
                                 <Label text="Gestión de Residuos" textFill="#2D5A27">
                                     <font><Font name="System Bold" size="17.0" /></font>
                                 </Label>                              
