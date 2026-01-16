@@ -9,6 +9,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -26,17 +27,17 @@ public class MenuDashboardController {
     
     @FXML
     private void goToResiduos(ActionEvent event) {
-        cambiarEscena("GestionResiduos.fxml", "EcoTrack - Gestión de Residuos");
+        cambiarEscena(event,"GestionResiduos.fxml", "EcoTrack - Gestión de Residuos");
     }
 
     @FXML
     private void goToLogistica(ActionEvent event) {
-        cambiarEscena("GestionRutas.fxml", "EcoTrack - Rutas de Recolección");
+        cambiarEscena(event,"GestionRutas.fxml", "EcoTrack - Rutas de Recolección");
     }
 
     @FXML
     private void goToEstadisticas(ActionEvent event) {
-        cambiarEscena("GestionCentro.fxml", "EcoTrack - Centro de Reciclaje");
+        cambiarEscena(event,"estadisticas.fxml", "EcoTrack - Centro de Reciclaje");
     }
 
     @FXML
@@ -49,21 +50,19 @@ public class MenuDashboardController {
         confirmacion.showAndWait().ifPresent(response -> {
             if (response == javafx.scene.control.ButtonType.OK) {
                 
-                cambiarEscena("VentanaInicio.fxml", "EcoTrack");
+                cambiarEscena(event,"VentanaInicio.fxml", "EcoTrack");
             }
         });
     }
 
     
     // Método para cambiar de pantalla sin repetir código en los otros métodos
-    
-    private void cambiarEscena(String fxml, String titulo) {
+     
+    private void cambiarEscena(ActionEvent event, String fxml, String titulo) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxml));
             Parent root = loader.load();
-
-            Stage stage = (Stage) btnResiduos.getScene().getWindow();
-
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             boolean wasMaximized = stage.isMaximized();
             double currentWidth = stage.getWidth();
             double currentHeight = stage.getHeight();
