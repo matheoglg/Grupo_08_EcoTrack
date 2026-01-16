@@ -16,6 +16,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TableColumn;
@@ -98,6 +99,14 @@ public class GestionRutasController {
             stage.setScene(new Scene(root));
             stage.show();
         } catch (IOException e) {
-            lblInfoDespacho.setText("Error al regresar: " + e.getMessage());
+            mostrarAlerta("Error", "No se pudo volver al menú principal.");
         }
-    }}
+    }
+    
+    private void mostrarAlerta(String titulo, String mensaje) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(titulo);
+        alert.setContentText(mensaje);
+        alert.showAndWait();
+    }
+}

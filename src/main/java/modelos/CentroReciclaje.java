@@ -38,6 +38,14 @@ public class CentroReciclaje {
             return;
         }
         Residuo r = pilaResiduos.pop();
+        if (r.getVehiculoTransportador() != null) {
+            VehiculoRecolector v = r.getVehiculoTransportador();
+            double nuevaCarga = v.getCargaActual() - r.getPeso();
+            v.setCargaActual(Math.max(0, nuevaCarga));
+
+            System.out.println("Procesado: Carga del vehículo " + v.getId() + " reducida en " + r.getPeso() + "kg");
+        }
+
         actualizarEstadisticas(r);
     }
     

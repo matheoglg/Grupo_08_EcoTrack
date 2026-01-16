@@ -36,7 +36,7 @@ public class MenuDashboardController {
 
     @FXML
     private void goToEstadisticas(ActionEvent event) {
-        cambiarEscena("estadisticas.fxml", "EcoTrack - Centro de Reciclaje");
+        cambiarEscena("GestionCentro.fxml", "EcoTrack - Centro de Reciclaje");
     }
 
     @FXML
@@ -57,7 +57,7 @@ public class MenuDashboardController {
 
     
     // Método para cambiar de pantalla sin repetir código en los otros métodos
-     
+    
     private void cambiarEscena(String fxml, String titulo) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxml));

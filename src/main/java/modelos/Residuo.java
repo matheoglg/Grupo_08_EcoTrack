@@ -19,6 +19,7 @@ public class Residuo implements Comparable<Residuo> {
     private LocalDate fechaRecoleccion;
     private Zona zona;
     private int prioridadAmbiental;
+    private VehiculoRecolector vehiculoTransportador;
 
     public Residuo(String id, String nombre, String tipo, double peso, LocalDate fechaRecoleccion, Zona zona, int prioridadAmbiental) {
         this.id = id;
@@ -84,6 +85,14 @@ public class Residuo implements Comparable<Residuo> {
 
     public void setPrioridadAmbiental(int prioridadAmbiental) {
         this.prioridadAmbiental = prioridadAmbiental;
+    }
+    
+    public void setVehiculoTransportador(VehiculoRecolector v) {
+        this.vehiculoTransportador = v;
+    }
+
+    public VehiculoRecolector getVehiculoTransportador() {
+        return vehiculoTransportador;
     }
 
     // Ordenar por prioridad ambiental de mayor a menor

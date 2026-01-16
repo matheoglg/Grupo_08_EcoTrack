@@ -108,35 +108,69 @@ public class SistemaEcoTrack {
             System.out.println("No hay vehículos disponibles para despacho.");
             return; 
         }
-        //requerimiento: zona con - utilidad ambiental y + basura
+
+        // Zona con menor utilidad y mas basura
         Zona zonaCritica = null;
         double menorUtilidad = Double.MAX_VALUE;
         int maxBasura = -1;
 
         for (Zona z : mapaZonas.values()) {
-            int utilidadAct = z.calcularUtilidad();
+            double utilidadAct = z.calcularUtilidad();
             int basuraPendiente = z.getpPendiente();
-            
+
+            // Menor utilidad, sino, con mas basura
             if (utilidadAct < menorUtilidad || (utilidadAct == menorUtilidad && basuraPendiente > maxBasura)) {
                 menorUtilidad = utilidadAct;
                 maxBasura = basuraPendiente;
                 zonaCritica = z;
             }
         }
+
+        // Despacho si necesita recoleccion
         if (zonaCritica != null && zonaCritica.getpPendiente() > 0) {
-            //vehículo con + prioridad de la cola
+            // Vehiculo con mayor prioridad
             VehiculoRecolector v = colaVehiculos.dequeue();
             v.asignarZona(zonaCritica);
-            //volver a la cola para la persistencia
+
+            // Recolección
+            Residuo recolectado = null;
+            int totalResiduos = listaResiduos.size();
+
+            for (int i = 0; i < totalResiduos; i++) {
+                Residuo r = listaResiduos.get(i); 
+
+                if (r.getZona().getNombre().equals(zonaCritica.getNombre())) {
+                    double cargaPrevia = v.getCargaActual();
+                    v.agregarResiduo(r); 
+
+                    if (v.getCargaActual() > cargaPrevia) {
+                        recolectado = r;
+                        recolectado.setVehiculoTransportador(v); 
+
+                        // Se elimina de la calle
+                        listaResiduos.remove(i); 
+                        break; 
+                    }
+                }
+            }
+
+            // Traslado a central
+            if (recolectado != null) {
+                cReciclaje.apilarResiduo(recolectado);
+                System.out.println("Vehículo " + v.getId() + " cargó residuo " + recolectado.getId() + " y lo llevó al centro.");
+            } else {
+                System.out.println("El vehículo " + v.getId() + " llegó a la zona pero no pudo cargar residuos (exceso de peso).");
+            }
+
+            // El vehiculo vuelve a encolarse
             colaVehiculos.enqueue(v);
-            System.out.println("Vehículo " + v.getId() + " despachado a " + zonaCritica.getNombre());
             registrarCambio();
+
         } else {
-            System.out.println("No se requiere despacho");
+            System.out.println("No se requiere despacho en este momento: zonas estables.");
         }
     }
-    
-    
+  
     
     public String obtenerZonaMasCritica() {
         if (mapaZonas.isEmpty()) return "No hay zonas registradas";
@@ -179,7 +213,6 @@ public class SistemaEcoTrack {
         guardarEstadisticas();
         guardarVehiculos();
         guardarZonas();
-        cargarVehiculos();
     }
     
     private void guardarResiduos() {
@@ -313,22 +346,25 @@ public class SistemaEcoTrack {
             System.out.println("Archivo vehiculos.txt no existe.");
             return;
         }
+        while(!colaVehiculos.isEmpty()){
+            colaVehiculos.dequeue();
+        }
+
         try (Scanner sc = new Scanner(f)) {
             while (sc.hasNextLine()) {
                 String linea = sc.nextLine();
                 if (linea.trim().isEmpty()) continue;
                 String[] d = linea.split(";");    
                 if (d.length >= 3) {
-                    VehiculoRecolector v = new VehiculoRecolector(d[0], Double.parseDouble(d[1]),Double.parseDouble(d[2]), mapaZonas.get(d[3]));
+                    Zona z = (d.length >= 4) ? mapaZonas.get(d[3]) : null;
+
+                    VehiculoRecolector v = new VehiculoRecolector(d[0], Double.parseDouble(d[1]), Double.parseDouble(d[2]), z);
                     v.setCargaActual(Double.parseDouble(d[2]));
-                    if (d.length >= 4 && !d[3].equals("Sin Zona")) {
-                        Zona z = mapaZonas.get(d[3]);
-                        if (z != null) v.asignarZona(z);
-                    }
+
                     colaVehiculos.enqueue(v);
                 }
             }   
-        } catch (Exception e) { System.err.println("Error cargando vehiculos"); }
+        } catch (Exception e) { System.err.println("Error cargando vehiculos: " + e.getMessage()); }
     }
     
     
