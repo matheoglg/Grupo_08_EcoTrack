@@ -95,23 +95,34 @@ public class Residuo implements Comparable<Residuo> {
         return vehiculoTransportador;
     }
 
+    
+    //comparadores ajustados para evitar errores
     // Ordenar por prioridad ambiental de mayor a menor
     @Override
     public int compareTo(Residuo otroResiduo) {
+        if (otroResiduo == null) return 1;
         return Integer.compare(this.getPrioridadAmbiental(), otroResiduo.getPrioridadAmbiental());
     }
     // Ordenar por peso
     public static Comparator<Residuo> PorPeso = (r1, r2) -> {
+        if (r1 == null || r2 == null) return 0;
         return Double.compare(r1.getPeso(), r2.getPeso());
     };
 
     // Ordenar por Tipo (Alfabético A-Z)
     public static Comparator<Residuo> PorTipo = (r1, r2) -> {
+        if (r1 == null || r2 == null) return 0;
+        String t1 = r1.getTipo();
+        String t2 = r2.getTipo();
+        if (t1 == null && t2 == null) return 0;
+        if (t1 == null) return 1;
+        if (t2 == null) return -1;
         return r1.getTipo().compareToIgnoreCase(r2.getTipo());
     };
 
     // Ordenar por Prioridad Ambiental (Mayor a Menor)
     public static Comparator<Residuo> PorPrioridad = (r1, r2) -> {
+        if (r1 == null || r2 == null) return 0;
         return Integer.compare(r2.getPrioridadAmbiental(), r1.getPrioridadAmbiental());
     };
     

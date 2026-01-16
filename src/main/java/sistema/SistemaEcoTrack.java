@@ -376,7 +376,7 @@ public class SistemaEcoTrack {
                 String parteNumerica = r.getId().split("-")[1];
                 int actual = Integer.parseInt(parteNumerica);
                 if (actual > maxId) maxId = actual;
-            } catch (Exception e) {
+            } catch (NumberFormatException e) {
                 //si el id no tiene el formato esperado se ignora
             }
         }
@@ -391,15 +391,17 @@ public class SistemaEcoTrack {
         List<VehiculoRecolector> listaTemporal = new ArrayList<>();
 
         //vaciamos la original a una lista temporal
-        while (!this.colaVehiculos.isEmpty()) {
-            listaTemporal.add(this.colaVehiculos.dequeue());
-        }
+        try {
+            while (!this.colaVehiculos.isEmpty()) {
+                listaTemporal.add(this.colaVehiculos.dequeue());
+            }
+        }finally {
         //se llenan ambas
-        for (VehiculoRecolector v : listaTemporal) {
-            this.colaVehiculos.enqueue(v); 
-            copia.enqueue(v);             
+            for (VehiculoRecolector v : listaTemporal) {
+                this.colaVehiculos.enqueue(v); 
+                copia.enqueue(v);             
+            }
         }
-
         return copia;
     }
     
