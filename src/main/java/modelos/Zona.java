@@ -46,4 +46,10 @@ public class Zona {
     public int calcularUtilidad(){
         return pRecolectado - pPendiente;
     }
+    
+    
+    @Override
+    public String toString() {
+        return this.nombre; 
+    }
 }

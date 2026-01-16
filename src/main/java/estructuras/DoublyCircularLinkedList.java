@@ -267,4 +267,40 @@ public class DoublyCircularLinkedList<E> implements List<E>, Iterable<E>{
             }
         }
     }
+    
+    
+    //elimina un nodo buscando directamente por su contenido
+        //seguro para la interfaz que eliminar por índice
+    public boolean eliminar(E dato) {
+        
+        if (isEmpty() || dato == null) return false;
+    
+        DoublyNodeList<E> actual = head;
+
+        do {
+            if (actual.getContent().equals(dato)) {
+
+                //caso base 1, unico nodo
+                if (head == last) {
+                    head = null;
+                    last = null;
+                } else {
+                    //caso base 2, nodo a eliminar es head
+                    if (actual == head) {
+                        head = head.getNext();
+                    }
+                    //caso base 3, nodo a eliminar es last
+                    if (actual == last) {
+                        last = last.getPrevious();
+                    }
+                    actual.getPrevious().setNext(actual.getNext());
+                    actual.getNext().setPrevious(actual.getPrevious());
+                }
+                return true;
+            }
+            actual = actual.getNext();
+        } while (actual != head);
+
+        return false;
+    }
 }

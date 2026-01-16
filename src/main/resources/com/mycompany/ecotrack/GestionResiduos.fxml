@@ -16,7 +16,7 @@
                 <Font name="System Bold" size="24.0" />
             </font>
         </Label>
-        <Label text="| Gestión de Residuos" style="-fx-text-fill: #7f8c8d;">
+        <Label text="Gestión de Residuos" style="-fx-text-fill: #7f8c8d;">
             <font>
                 <Font size="18.0" />
             </font>
@@ -31,7 +31,7 @@
             
             <GridPane hgap="10" vgap="12">
                 <Label text="ID del Residuo:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
-                <TextField fx:id="txtId" promptText="Ej: R-001" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+                <TextField fx:id="txtId" editable="false" focusTraversable="false" style="-fx-background-color: #f4f4f4; -fx-border-color: #dcdde1; -fx-border-radius: 3;" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
 
                 <Label text="Nombre:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
                 <TextField fx:id="txtNombre" promptText="Ej: Botellas PET" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
@@ -89,13 +89,22 @@
                 </GridPane>
             </VBox>
 
-            <HBox spacing="20" alignment="CENTER">
-                <Button text="◀ Anterior" onAction="#handleAnterior" prefWidth="120" prefHeight="35" style="-fx-background-color: #34495e; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 20;"/>
-                <Label fx:id="lblContador" text="Residuos: 0" style="-fx-font-style: italic;"/>
-                <Button text="Siguiente ▶" onAction="#handleSiguiente" prefWidth="120" prefHeight="35" style="-fx-background-color: #34495e; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 20;"/>
-            </HBox>
+            <VBox spacing="10" alignment="CENTER">
+                <HBox spacing="20" alignment="CENTER">
+                    <Button text="◀ Anterior" onAction="#handleAnterior" prefWidth="120" prefHeight="35" style="-fx-background-color: #34495e; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 20;"/>
+                    <Label fx:id="lblContador" text="Residuos: 0" style="-fx-font-style: italic;"/>
+                    <Button text="Siguiente ▶" onAction="#handleSiguiente" prefWidth="120" prefHeight="35" style="-fx-background-color: #34495e; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 20;"/>
+                </HBox>
+    
+                <Button text="Eliminar este Residuo" onAction="#handleEliminar" maxWidth="Infinity" prefHeight="35" 
+                        style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand; -fx-background-radius: 20;">
+                    <VBox.margin>
+                        <Insets left="50" right="50" top="5"/>
+                    </VBox.margin>
+                </Button>
+            </VBox>
         </VBox>
     </HBox>
-
+    
     <Button text="Regresar al Menú Principal" onAction="#irAlMenu" prefWidth="300" prefHeight="40" style="-fx-background-color: #95a5a6; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand; -fx-background-radius: 25;"/>
 </VBox>

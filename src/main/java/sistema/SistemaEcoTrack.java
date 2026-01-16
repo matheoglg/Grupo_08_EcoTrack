@@ -88,6 +88,10 @@ public class SistemaEcoTrack {
         this.cambiosP = false;
     }
     
+    public void registrarCambio() {
+        this.cambiosP = true;
+    }
+    
     public void agregarVehiculo(VehiculoRecolector v) {
         if (v != null) {
             colaVehiculos.enqueue(v);
@@ -116,15 +120,15 @@ public class SistemaEcoTrack {
         if (zonaCritica != null) {
             VehiculoRecolector vehiculo = colaVehiculos.dequeue(); 
 
-            // 4. Asignar el vehículo a la zona crítica
+            //asignar el vehículo a la zona crítica
             vehiculo.asignarZona(zonaCritica);
 
             System.out.println("DESPACHO: El vehículo " + vehiculo.getId() + 
                                " ha sido enviado a la zona: " + zonaCritica.getNombre() + 
                                " (Utilidad: " + menorUtilidad + ")");
 
-            // Nota: Una vez que el vehículo termine su ruta, 
-            // deberías volver a meterlo a la cola con colaVehiculos.add(vehiculo)
+            //Una vez que el vehículo termine su ruta, 
+            //se deberia meter a la cola con colaVehiculos.add(vehiculo)
         }        
     }
     
@@ -163,6 +167,8 @@ public class SistemaEcoTrack {
         if (listaResiduos.isEmpty()) {
             inicializarDatos();
         }
+        
+        this.cambiosP = false;
     }
     
     public void guardarDatos(){
@@ -175,12 +181,15 @@ public class SistemaEcoTrack {
     
     private void guardarResiduos() {
         File f = new File(ARCHIVO_RESIDUOS);
-        try (PrintWriter out = new PrintWriter(new FileWriter(f))) {
-            if (listaResiduos.isEmpty()) return;
+        try (PrintWriter out = new PrintWriter(new FileWriter(f, false))) {
+            if (listaResiduos.isEmpty()){
+                out.print(""); //lista vacía, limpia el archivo
+                return;
+            }            
             for (Residuo r : listaResiduos) {
                 if (r == null) continue;
                 // Formato: id;nombre;tipo;peso;fecha;nombreZona;prioridad
-                out.println(r.getId() + ";" + r.getNombre() + ";" + r.getTipo() + ";" + 
+                    out.println(r.getId() + ";" + r.getNombre() + ";" + r.getTipo() + ";" + 
                             r.getPeso() + ";" + r.getFechaRecoleccion() + ";" + 
                             r.getZona().getNombre() + ";" + r.getPrioridadAmbiental());
             }
@@ -316,6 +325,23 @@ public class SistemaEcoTrack {
     }
     
     
+    //metodo para id automatico, facilidad al usuario
+    public String generarSiguienteId() {
+        int maxId = 0;
+        for (Residuo r : listaResiduos) {
+            try {
+                String parteNumerica = r.getId().split("-")[1];
+                int actual = Integer.parseInt(parteNumerica);
+                if (actual > maxId) maxId = actual;
+            } catch (Exception e) {
+                //si el id no tiene el formato esperado se ignora
+            }
+        }
+        //retorna el siguiente numero con formato de 3 dígitos )
+        return String.format("R-%03d", maxId + 1);
+    }
+    
+    
     
     public void inicializarDatos(){
         Zona norte = new Zona("Sector Norte", 0, 0);
@@ -349,7 +375,7 @@ public class SistemaEcoTrack {
         registrarResiduo(new Residuo("R-003", "Restos de Comida", "Orgánico", 25.0, 
                          LocalDate.now(), sur, 3));
 
-        // 4. Inicializar algunas estadísticas en el Centro de Reciclaje
+        // Inicializar algunas estadísticas en el Centro de Reciclaje
         // Esto simula que ya se ha procesado algo antes
         cReciclaje.getEstadisticasPorTipo().put("Plástico", 150.0);
         cReciclaje.getEstadisticasPorTipo().put("Papel", 80.0);

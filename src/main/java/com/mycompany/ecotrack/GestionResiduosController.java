@@ -20,6 +20,7 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
 import modelos.Residuo;
 import modelos.Zona;
@@ -54,14 +55,27 @@ public class GestionResiduosController {
     @FXML
     public void initialize() {
         cmbTipo.setItems(FXCollections.observableArrayList("Plástico", "Papel", "Orgánico", "Vidrio", "Metal"));
-        
-        cmbZona.setItems(FXCollections.observableArrayList(sistema.getMapaZonas().values()));
-        
+        cmbZona.setItems(FXCollections.observableArrayList(sistema.getMapaZonas().values()));       
         cmbOrden.setItems(FXCollections.observableArrayList("Prioridad", "Peso", "Tipo"));
         cmbOrden.setValue("Prioridad");
-        // Configurar el Iterador al iniciar
+     
         configurarIterador();
+        
+        if (sistema.getResiduos().isEmpty()) { //lista vacia
+        actualizarVisor();
+        }
+        
+        txtPeso.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.matches("\\d*(\\.\\d*)?")) {
+                txtPeso.setText(oldValue); 
+            }
+        });
+        
+        txtId.setEditable(false); //bloquea el campo para que el usuario no escriba
+        txtId.setText(sistema.generarSiguienteId()); //primer id disponible
+        txtId.setStyle("-fx-background-color: #eeeeee;");
     }
+        
 
     private void configurarIterador() {
         iteradorUI = (DoublyCircularLinkedList<Residuo>.ListIterator) sistema.getResiduos().iterator();
@@ -71,6 +85,15 @@ public class GestionResiduosController {
     // --- LÓGICA DE REGISTRO ---
     @FXML
     private void handleRegistrar() {
+    
+    //validacion de campos vacios
+    if (txtId.getText().isEmpty() || txtNombre.getText().isEmpty() || 
+        txtPeso.getText().isEmpty() || cmbTipo.getValue() == null || 
+        dpFecha.getValue() == null || cmbZona.getValue() == null) {
+        
+        mostrarAlerta("Campos incompletos", "Por favor, complete todos los campos antes de registrar.");
+        return; 
+    }
         try {
             // Extraer datos
             String id = txtId.getText();
@@ -90,9 +113,11 @@ public class GestionResiduosController {
             configurarIterador(); 
             
             mostrarAlerta("Éxito", "Residuo registrado correctamente.");
-        } catch (Exception e) {
-            mostrarAlerta("Error", "Verifique que todos los campos sean correctos.");
-        }
+        } catch (NumberFormatException e) { //si el peso no es un numero valido
+        mostrarAlerta("Error de formato", "El peso debe ser un valor numérico válido.");
+    } catch (Exception e) {
+        mostrarAlerta("Error", "No se pudo registrar: " + e.getMessage());
+    }
     }
 
     // NAVEGACIÓN
@@ -113,15 +138,37 @@ public class GestionResiduosController {
     }
 
     private void actualizarVisor() {
+        //valida si la lista tiene algo
+        if (sistema.getResiduos().isEmpty()) {
+            lblResumenId.setText("ID: ---");
+            lblResumenNombre.setText("Lista vacía");
+            lblResumenTipo.setText("---");
+            lblResumenPeso.setText("---");
+            lblResumenFecha.setText("---");
+            lblResumenZona.setText("---");
+            lblResumenPrioridad.setText("---");
+            lblContador.setText("Residuos: 0");
+            return;
+        }
+
         Residuo r = iteradorUI.getCurrentContent();
+
         if (r != null) {
             lblResumenId.setText("ID: " + r.getId());
-            lblResumenNombre.setText("Nombre: " + r.getNombre());
-            lblResumenTipo.setText("Tipo: " + r.getTipo());
-            lblResumenPeso.setText("Peso: " + r.getPeso() + " kg");
-            lblResumenFecha.setText("Fecha: " + r.getFechaRecoleccion().toString());
-            lblResumenZona.setText("Zona: " + r.getZona().getNombre());
-            lblResumenPrioridad.setText("Prioridad: " + r.getPrioridadAmbiental());
+            lblResumenNombre.setText(r.getNombre());
+            lblResumenTipo.setText(r.getTipo());
+            lblResumenPeso.setText(r.getPeso() + " kg");
+
+            if (r.getFechaRecoleccion() != null) {
+                lblResumenFecha.setText(r.getFechaRecoleccion().toString());
+            }
+            if (r.getZona() != null) {
+                lblResumenZona.setText(r.getZona().getNombre()); 
+            } else {
+                lblResumenZona.setText("Sin zona");
+            }
+            lblResumenPrioridad.setText("Nivel: " + r.getPrioridadAmbiental());
+            lblContador.setText("Residuos: " + sistema.getResiduos().size());
         }
     }
 
@@ -135,8 +182,6 @@ public class GestionResiduosController {
         } else {
             sistema.getResiduos().ordenar(Residuo.PorPrioridad);
         }
-
-        // IMPORTANTE: Después de ordenar, reinicia el iterador
         configurarIterador(); 
     }
     @FXML
@@ -150,7 +195,43 @@ public class GestionResiduosController {
         
     }
     
+    
     @FXML
+    private void handleEliminar() {
+        //obtener el residuo actual
+        Residuo residuoAVer = iteradorUI.getCurrentContent();
+
+        if (residuoAVer == null) {
+            mostrarAlerta("Aviso", "No hay nada para eliminar.");
+            return;
+        }
+
+        //confirmacion
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setTitle("Confirmar Eliminación");
+        confirm.setHeaderText("¿Estás seguro de eliminar este registro?");
+        confirm.setContentText("Se eliminará: " + residuoAVer.getNombre() + " (ID: " + residuoAVer.getId() + ")");
+
+        //eliminar si confirma
+        confirm.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.OK) {
+                //borrar de la lista en memoria
+                boolean exito = sistema.getResiduos().eliminar(residuoAVer);
+                if (exito) {
+                    if (residuoAVer.getZona() != null) {
+                        int actuales = residuoAVer.getZona().getpPendiente();
+                        residuoAVer.getZona().setpPendiente(Math.max(0, actuales - 1));
+                    }
+                    sistema.registrarCambio();
+                    configurarIterador(); 
+                    actualizarVisor();
+                    txtId.setText(sistema.generarSiguienteId());
+                    mostrarAlerta("Eliminado", "Se ha eliminado de la lista. Recuerde guardar los cambios para actualizar el archivo.");
+                }
+            }
+        });
+    }
+   @FXML
     private void irAlMenu(ActionEvent event) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("MenuDashboard.fxml"));
@@ -162,12 +243,17 @@ public class GestionResiduosController {
             mostrarAlerta("Error", "No se pudo volver al menú principal.");
         }
     }
-
+    
+    
     private void limpiarCampos() {
         txtId.clear();
         txtNombre.clear();
         txtPeso.clear();
         dpFecha.setValue(null);
+        cmbTipo.setValue(null);
+        cmbZona.setValue(null);
+        sldPrioridad.setValue(1);
+        txtId.setText(sistema.generarSiguienteId());
     }
 
     private void mostrarAlerta(String titulo, String mensaje) {
