@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
+import javafx.event.ActionEvent;
+import javafx.stage.FileChooser;
 import modelos.CentroReciclaje;
 import modelos.Residuo;
 import modelos.VehiculoRecolector;

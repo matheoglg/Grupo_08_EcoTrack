@@ -1,7 +1,7 @@
 T:Vidrio:23.0
 T:Plástico:188.5
 T:Papel:132.0
-T:Metal:20.0
-Z:Sector Sur:48.0
+T:Metal:40.0
+Z:Sector Sur:68.0
 Z:Sector Norte:252.5
 Z:Casco Central:40.0

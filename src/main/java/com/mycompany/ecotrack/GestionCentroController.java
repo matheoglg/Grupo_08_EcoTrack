@@ -4,7 +4,9 @@
  */
 package com.mycompany.ecotrack;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -23,9 +25,11 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TableColumn;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import modelos.CentroReciclaje;
 import modelos.Residuo;
+import modelos.Zona;
 import sistema.SistemaEcoTrack;
 /**
  *
@@ -96,7 +100,41 @@ public class GestionCentroController {
         centro.procesarResiduo();
         actualizarUI();
     }
+    
+    @FXML
+    private void handleExportarCSV(ActionEvent event) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Exportar Estadísticas de Reciclaje");
+        fileChooser.setInitialFileName("Reporte_Pesos_Tipo_EcoTrack.csv");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV", "*.csv"));
 
+        File file = fileChooser.showSaveDialog(((Node) event.getSource()).getScene().getWindow());
+
+        if (file != null) {
+            try (PrintWriter writer = new PrintWriter(file)) {
+            
+                CentroReciclaje centro = sistema.getCentroReciclaje();
+
+                writer.println("Tipo de Residuo;Total Peso Recolectado (kg);Porcentaje del Total");
+
+                double pesoTotalGlobal = centro.getEstadisticasPorTipo().values()
+                .stream().mapToDouble(Double::doubleValue).sum();
+
+                for (Map.Entry<String, Double> entry : centro.getEstadisticasPorTipo().entrySet()) {
+                    String tipo = entry.getKey();
+                    double peso = entry.getValue();
+                    double porcentaje = (pesoTotalGlobal > 0) ? (peso / pesoTotalGlobal) * 100 : 0;
+
+                    writer.println(String.format("%s;%.2f;%.1f%%", tipo, peso, porcentaje));
+                }
+                
+                mostrarAlerta("Éxito", "Estadísticas por tipo exportadas correctamente.");
+            } catch (Exception e) {
+                mostrarAlerta("Error", "No se pudo generar el reporte de pesos.");
+            }
+        }
+    }
+    
     @FXML
     private void handleImprimir(ActionEvent event) {
         sistema.guardarEstadisticas();

@@ -1,4 +1,3 @@
-R-010;Latas de Cerveza;Metal;20.0;2026-01-15;Sector Sur;4
 R-011;Salmon podrido;Orgánico;20.0;2026-01-04;Sector Norte;5
 R-012;Botellas;Vidrio;10.0;2026-01-08;Sector Norte;3
 R-013;Monte;Orgánico;2.0;2026-01-09;Sector Norte;2
@@ -9,3 +8,6 @@ R-018;Montesinai;Plástico;15.0;2026-01-10;Casco Central;5
 R-019;Montesito;Vidrio;45.0;2026-01-09;Sector Norte;1
 R-020;Muñeco;Plástico;14.0;2026-01-02;Sector Sur;4
 R-021;Basura;Plástico;25.0;2026-01-02;Sector Sur;3
+R-022;Botella;Orgánico;10.0;2026-01-01;Sector Sur;2
+R-023;Botella;Plástico;23.0;2026-01-02;Sector Sur;3
+R-024;et;Vidrio;24.0;2026-01-09;Sector Sur;3
