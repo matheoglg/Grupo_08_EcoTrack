@@ -43,10 +43,10 @@ public class GestionCentroController {
     @FXML private TableView<Map.Entry<String, Double>> tblEstadisticasZona;
     @FXML private TableColumn<Map.Entry<String, Double>, String> colZona;
     @FXML private TableColumn<Map.Entry<String, Double>, Double> colPesoZona;
-
+    
     private SistemaEcoTrack sistema = SistemaEcoTrack.getInstancia();
     private CentroReciclaje centro = sistema.getCentroReciclaje();
-
+    
     @FXML
     public void initialize() {
         configurarTablas();
@@ -97,6 +97,11 @@ public class GestionCentroController {
         actualizarUI();
     }
 
+    @FXML
+    private void handleImprimir(ActionEvent event) {
+        sistema.guardarEstadisticas();
+    }
+    
     @FXML
     private void handleRegresar(ActionEvent event) {
         try {

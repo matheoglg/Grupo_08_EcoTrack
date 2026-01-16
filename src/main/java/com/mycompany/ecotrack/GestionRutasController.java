@@ -93,7 +93,6 @@ public class GestionRutasController {
 
         // Ejecutar despacho automático basado en la prioridad del volumen/impacto
         sistema.despacharVehiculo();
-        
         lblInfoDespacho.setText("Vehículo despachado exitosamente.");
         actualizarTablas();
     }

@@ -1,5 +1,11 @@
-R-001;Envases Plásticos;Plástico;12.5;2026-01-16;Sector Norte;2
-R-002;Papel Periódico;Papel;5.0;2026-01-15;Sector Norte;1
-R-009;Caja de cereal;Papel;1.0;2026-01-02;Sector Sur;2
 R-010;Latas de Cerveza;Metal;20.0;2026-01-15;Sector Sur;4
 R-011;Salmon podrido;Orgánico;20.0;2026-01-04;Sector Norte;5
+R-012;Botellas;Vidrio;10.0;2026-01-08;Sector Norte;3
+R-013;Monte;Orgánico;2.0;2026-01-09;Sector Norte;2
+R-014;Botella;Plástico;0.0;2026-01-09;Sector Sur;2
+R-015;Botella;Plástico;26.0;2026-01-08;Sector Sur;3
+R-016;Monte;Plástico;10.0;2026-01-09;Sector Sur;2
+R-018;Montesinai;Plástico;15.0;2026-01-10;Casco Central;5
+R-019;Montesito;Vidrio;45.0;2026-01-09;Sector Norte;1
+R-020;Muñeco;Plástico;14.0;2026-01-02;Sector Sur;4
+R-021;Basura;Plástico;25.0;2026-01-02;Sector Sur;3

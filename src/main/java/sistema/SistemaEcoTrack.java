@@ -242,7 +242,7 @@ public class SistemaEcoTrack {
     }
     
     
-    private void guardarEstadisticas() {
+    public void guardarEstadisticas() {
         try (PrintWriter out = new PrintWriter(new FileWriter(ARCHIVO_ESTADISTICAS))) {
             // Guardamos el mapa de tipos
             if (cReciclaje.getEstadisticasPorTipo() != null) {

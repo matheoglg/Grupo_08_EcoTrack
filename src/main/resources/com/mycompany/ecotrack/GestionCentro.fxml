@@ -48,6 +48,7 @@
                         <TableColumn fx:id="colPesoTipo" text="Peso Total (kg)" prefWidth="150"/>
                     </columns>
                 </TableView>
+                
             </VBox>
 
             <VBox spacing="10" VBox.vgrow="ALWAYS" style="-fx-background-color: white; -fx-padding: 20; -fx-border-color: #dcdde1; -fx-border-radius: 15; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 5);">
@@ -58,7 +59,10 @@
                         <TableColumn fx:id="colPesoZona" text="Peso Total (kg)" prefWidth="150"/>
                     </columns>
                 </TableView>
+                
             </VBox>
+            <Button text="Imprimir" onAction="#handleImprimir" maxWidth="Infinity" prefHeight="45" 
+                        style="-fx-background-color: #e67e22; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand; -fx-background-radius: 25;"/>
         </VBox>
     </HBox>
 
